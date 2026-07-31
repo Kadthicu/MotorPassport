@@ -21,8 +21,8 @@
     .step.upcoming{opacity:.55}
     .advance-row{display:flex;justify-content:flex-end;margin-top:10px}
     .advance-row .btn:disabled{opacity:.4;cursor:default}
-    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 -1px}
-    .tab{border:0;background:#e2e8f0;color:#334155;padding:11px 6px;border-radius:14px 14px 0 0;font-weight:700;cursor:pointer;font-size:12px}
+    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0 -1px}
+    .tab{border:0;background:#e2e8f0;color:#334155;padding:11px 4px;border-radius:14px 14px 0 0;font-weight:700;cursor:pointer;font-size:11px}
     .tab.active{background:var(--card);color:var(--accent2)}
     .tabpanels{background:var(--card);border-radius:0 0 22px 22px;box-shadow:0 12px 36px #0f172a15;overflow:hidden}
     .panel{padding:20px;display:none}
@@ -69,6 +69,16 @@
     .dash-badge.s2{background:#dbeafe;color:#1e40af}
     .dash-badge.s3{background:#ede9fe;color:#5b21b6}
     .dash-badge.s4{background:#dcfce7;color:#166534}
+    .defect-table-wrap{overflow-x:auto}
+    .defect-table{width:100%;border-collapse:collapse;font-size:13px}
+    .defect-table th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+    .defect-table td{padding:9px 10px;border-bottom:1px solid var(--line)}
+    .defect-table tbody tr:last-child td{border-bottom:0}
+    .defect-table input[type=text]{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--ink)}
+    .defect-table input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+    .defect-badge{padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap;display:inline-block}
+    .defect-badge.bad{background:#fee2e2;color:#b91c1c}
+    .defect-badge.ok{background:#dcfce7;color:#166534}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
     @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}}
     @media print{body{background:white}.hero,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
@@ -133,6 +143,7 @@
       <div class="tabs" id="tabs">
         <button class="tab active" data-tab="specs" type="button">Характеристики</button>
         <button class="tab" data-tab="acceptance" type="button">Акт приёмки</button>
+        <button class="tab" data-tab="defect" type="button">Дефектная ведомость</button>
         <button class="tab" data-tab="test" type="button">Акт испытаний</button>
         <button class="tab" data-tab="tz" type="button">Техническое задание</button>
       </div>
@@ -144,6 +155,13 @@
         <article class="panel" data-panel="acceptance">
           <div class="panel-head"><h4>Акт приёмки</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-acceptance"></div></div></div>
           <div class="rows" id="rows-acceptance"></div>
+        </article>
+        <article class="panel" data-panel="defect">
+          <div class="panel-head"><h4>Дефектная ведомость</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-defect"></div></div></div>
+          <div id="parts-defect"></div>
+          <datalist id="partNamesList"></datalist>
+          <datalist id="bearingBrandsList"></datalist>
+          <datalist id="bearingSizesList"></datalist>
         </article>
         <article class="panel" data-panel="test">
           <div class="panel-head"><h4>Акт испытаний</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-test"></div></div></div>
@@ -163,6 +181,10 @@
 const STAGES=['Приёмка','Дефектация','Ремонт','Испытания','Выдача'];
 const STATUS_BY_STAGE=['Принят в ремонт','На дефектации','В ремонте','На испытаниях','Выдан заказчику'];
 
+const BASE_PART_NAMES=['Подшипник передний','Подшипник задний','Обмотка статора','Ротор','Вал ротора','Клеммная коробка','Крыльчатка вентилятора','Кожух вентилятора','Шпонка','Уплотнение (сальник)','Подшипниковый щит передний','Подшипниковый щит задний','Электромагнитный тормоз','Соединительная муфта'];
+const BASE_BEARING_BRANDS=['SKF','FAG','NSK','NTN','ZVL','GPZ','Timken','INA','Koyo'];
+const BASE_BEARING_SIZES=['6202','6203','6204','6205','6206','6207','6208','6209','6210','6212','6214','6216','6305','6306','6307','6308','6309','6310','6312','6314','6316','6318','7205','7208','7210'];
+
 const SCHEMAS={
   specs:[
     {key:'power',label:'Мощность'},
@@ -177,7 +199,6 @@ const SCHEMAS={
     {key:'acceptedBy',label:'Кем принят'},
     {key:'department',label:'Участок'},
     {key:'declaredFault',label:'Заявленная неисправность',type:'textarea'},
-    {key:'completeness',label:'Комплектность / заменённые узлы',type:'textarea'},
     {key:'notes',label:'Примечания',type:'textarea'}
   ],
   test:[
@@ -203,7 +224,14 @@ const motors={
       {date:'20.07.2026',actor:'Сидорова Е. В.'}
     ]},
     specs:{power:'45 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'286 кг',brake:'Электромагнитный тормоз ТЭП-45'},
-    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',declaredFault:'Заклинивание подшипника, перегрев обмотки',completeness:'Полный комплект. Заменены: подшипники SKF 6312/6310, уплотнения, муфта МУВП-400',notes:''},
+    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',declaredFault:'Заклинивание подшипника, перегрев обмотки',notes:''},
+    defect:{items:[
+      {name:'Подшипник передний',broken:true,brand:'SKF',size:'6312'},
+      {name:'Подшипник задний',broken:true,brand:'SKF',size:'6310'},
+      {name:'Обмотка статора',broken:false,brand:'',size:''},
+      {name:'Уплотнение (сальник)',broken:true,brand:'',size:''},
+      {name:'Соединительная муфта',broken:true,brand:'',size:''}
+    ]},
     testAct:{date:'20.07.2026',tester:'Петров А. С.',insulationResistance:'150 МОм',testPressure:'4 бар',vibration:'1,6 мм/с',conclusion:'Годен',notes:'Утечек нет, вибрация в пределах нормы'},
     tz:{
       workItems:[
@@ -226,7 +254,13 @@ const motors={
       null
     ]},
     specs:{power:'75 кВт',voltage:'660 В',rpm:'1 000 об/мин',ip:'IP54',mass:'412 кг',brake:'Электромагнитный тормоз ТЭП-75'},
-    acceptanceAct:{date:'19.07.2026',acceptedBy:'Смирнов Д. В.',department:'Цех № 2',declaredFault:'Износ подшипников, повреждена обмотка статора',completeness:'Полный комплект, требуется восстановление обмотки',notes:''},
+    acceptanceAct:{date:'19.07.2026',acceptedBy:'Смирнов Д. В.',department:'Цех № 2',declaredFault:'Износ подшипников, повреждена обмотка статора',notes:''},
+    defect:{items:[
+      {name:'Подшипник передний',broken:true,brand:'FAG',size:'6316'},
+      {name:'Подшипник задний',broken:true,brand:'FAG',size:'6314'},
+      {name:'Обмотка статора',broken:true,brand:'',size:''},
+      {name:'Соединительная муфта',broken:true,brand:'',size:''}
+    ]},
     testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Требует доработки',notes:'Испытания не проводились — двигатель в ремонте'},
     tz:{
       workItems:[
@@ -250,7 +284,13 @@ const motors={
       null
     ]},
     specs:{power:'30 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'218 кг',brake:'Электромагнитный тормоз ТЭП-30'},
-    acceptanceAct:{date:'21.07.2026',acceptedBy:'Кузнецов М. Н.',department:'Цех № 1',declaredFault:'Повреждение клеммной коробки, требуется дефектация обмотки',completeness:'Полный комплект',notes:''},
+    acceptanceAct:{date:'21.07.2026',acceptedBy:'Кузнецов М. Н.',department:'Цех № 1',declaredFault:'Повреждение клеммной коробки, требуется дефектация обмотки',notes:''},
+    defect:{items:[
+      {name:'Клеммная коробка',broken:true,brand:'',size:''},
+      {name:'Обмотка статора',broken:false,brand:'',size:''},
+      {name:'Подшипник передний',broken:false,brand:'SKF',size:'6310'},
+      {name:'Подшипник задний',broken:false,brand:'SKF',size:'6308'}
+    ]},
     testAct:{date:'22.07.2026',tester:'Лаборатория № 1',insulationResistance:'132 МОм',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:'Ожидаются испытания давлением и на вибрацию'},
     tz:{
       workItems:[
@@ -357,6 +397,50 @@ function saveTz(){
   renderTz(current.record,true);
 }
 
+function collectUsedValues(field){
+  const set=new Set();
+  getKnownIds().forEach(id=>{
+    const r=loadMotor(id);
+    if(r&&r.defect) r.defect.items.forEach(it=>{ if(it[field]) set.add(it[field]); });
+  });
+  return set;
+}
+function refreshPartsDatalists(){
+  const names=new Set(BASE_PART_NAMES); collectUsedValues('name').forEach(v=>names.add(v));
+  const brands=new Set(BASE_BEARING_BRANDS); collectUsedValues('brand').forEach(v=>brands.add(v));
+  const sizes=new Set(BASE_BEARING_SIZES); collectUsedValues('size').forEach(v=>sizes.add(v));
+  $('#partNamesList').innerHTML=[...names].map(v=>`<option value="${escapeHtml(v)}">`).join('');
+  $('#bearingBrandsList').innerHTML=[...brands].map(v=>`<option value="${escapeHtml(v)}">`).join('');
+  $('#bearingSizesList').innerHTML=[...sizes].map(v=>`<option value="${escapeHtml(v)}">`).join('');
+}
+
+function renderDefect(record,readOnly){
+  const items=record.defect.items;
+  const table=(rowsHtml)=>`<div class="defect-table-wrap"><table class="defect-table"><thead><tr><th>Деталь</th><th>${readOnly?'Состояние':'Сломана?'}</th><th>Марка</th><th>Размер</th>${readOnly?'':'<th></th>'}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
+  if(!items.length&&readOnly){
+    $('#parts-defect').innerHTML='<p class="hint" style="margin:0;color:var(--muted);font-size:13px">Детали не добавлены.</p>';
+  }else if(readOnly){
+    $('#parts-defect').innerHTML=table(items.map(it=>`<tr><td>${escapeHtml(it.name)}</td><td><span class="defect-badge ${it.broken?'bad':'ok'}">${it.broken?'Сломана':'Исправна'}</span></td><td>${escapeHtml(it.brand||'—')}</td><td>${escapeHtml(it.size||'—')}</td></tr>`).join(''));
+  }else{
+    refreshPartsDatalists();
+    const rows=items.map((it,i)=>`<tr><td><input type="text" list="partNamesList" data-idx="${i}" data-field="name" value="${escapeHtml(it.name)}"></td><td><input type="checkbox" data-idx="${i}" data-field="broken" ${it.broken?'checked':''}></td><td><input type="text" list="bearingBrandsList" data-idx="${i}" data-field="brand" value="${escapeHtml(it.brand||'')}"></td><td><input type="text" list="bearingSizesList" data-idx="${i}" data-field="size" value="${escapeHtml(it.size||'')}"></td><td><button type="button" class="icon-btn" data-remove-defect="${i}" title="Удалить">✕</button></td></tr>`).join('');
+    $('#parts-defect').innerHTML=(items.length?table(rows):'')+'<button type="button" class="btn secondary add-item" id="addDefectItemBtn">+ Добавить деталь</button>';
+  }
+  $('#actions-defect').innerHTML=readOnly
+    ?`<button class="btn secondary" data-act="edit" data-doc="defect" type="button">Редактировать</button>`
+    :`<button class="btn primary" data-act="save" data-doc="defect" type="button">Сохранить</button> <button class="btn secondary" data-act="cancel" data-doc="defect" type="button">Отмена</button>`;
+}
+
+function saveDefect(){
+  document.querySelectorAll('#parts-defect [data-field]').forEach(el=>{
+    const idx=Number(el.dataset.idx),field=el.dataset.field;
+    const item=current.record.defect.items[idx];
+    if(field==='broken') item.broken=el.checked; else item[field]=el.value;
+  });
+  saveMotor(current.id,current.record);
+  renderDefect(current.record,true);
+}
+
 function todayStr(){return new Date().toLocaleDateString('ru-RU')}
 function setStage(i){
   const actor=prompt('Кто выполняет переход на этап «'+STAGES[i]+'»?','')||'';
@@ -381,6 +465,7 @@ function showMotor(raw){
   $('#idLabel').textContent='ID: '+id;
   renderStepper(record);
   ['specs','acceptance','test'].forEach(k=>renderPanel(k,record,true));
+  renderDefect(record,true);
   renderTz(record,true);
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',i===0));
   document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===0));
@@ -436,7 +521,8 @@ $('#addForm').addEventListener('submit',e=>{
     model:$('#newModel').value.trim()||'Электродвигатель',
     stage:{current:0,log:[{date:$('#newDate').value.trim()||todayStr(),actor:acceptedBy},null,null,null,null]},
     specs:{power:$('#newPower').value.trim(),voltage:$('#newVoltage').value.trim(),rpm:$('#newRpm').value.trim(),ip:$('#newIp').value.trim(),mass:$('#newMass').value.trim(),brake:$('#newBrake').value.trim()},
-    acceptanceAct:{date:$('#newDate').value.trim()||todayStr(),acceptedBy,department:$('#newDepartment').value.trim(),declaredFault:$('#newFault').value.trim(),completeness:'',notes:''},
+    acceptanceAct:{date:$('#newDate').value.trim()||todayStr(),acceptedBy,department:$('#newDepartment').value.trim(),declaredFault:$('#newFault').value.trim(),notes:''},
+    defect:{items:[]},
     testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:''},
     tz:{workItems:[],customerRequirements:''}
   };
@@ -458,6 +544,10 @@ $('#tabpanels').addEventListener('click',e=>{
       if(btn.dataset.act==='edit') renderTz(current.record,false);
       if(btn.dataset.act==='save') saveTz();
       if(btn.dataset.act==='cancel') renderTz(current.record,true);
+    }else if(docKey==='defect'){
+      if(btn.dataset.act==='edit') renderDefect(current.record,false);
+      if(btn.dataset.act==='save') saveDefect();
+      if(btn.dataset.act==='cancel') renderDefect(current.record,true);
     }else{
       if(btn.dataset.act==='edit') renderPanel(docKey,current.record,false);
       if(btn.dataset.act==='save') saveEdit(docKey);
@@ -475,6 +565,18 @@ $('#tabpanels').addEventListener('click',e=>{
   if(remBtn){
     current.record.tz.workItems.splice(Number(remBtn.dataset.remove),1);
     renderTz(current.record,false);
+    return;
+  }
+  const addDefectBtn=e.target.closest('#addDefectItemBtn');
+  if(addDefectBtn){
+    current.record.defect.items.push({name:'',broken:false,brand:'',size:''});
+    renderDefect(current.record,false);
+    return;
+  }
+  const remDefectBtn=e.target.closest('button[data-remove-defect]');
+  if(remDefectBtn){
+    current.record.defect.items.splice(Number(remDefectBtn.dataset.removeDefect),1);
+    renderDefect(current.record,false);
   }
 });
 $('#checklist-tz').addEventListener('change',e=>{
@@ -493,10 +595,12 @@ $('#advanceBtn').addEventListener('click',advanceStage);
 window.addEventListener('beforeprint',()=>{
   if(!current) return;
   ['specs','acceptance','test'].forEach(k=>renderPanel(k,current.record,true));
+  renderDefect(current.record,true);
   renderTz(current.record,true);
 });
 
 refreshChips();
+refreshPartsDatalists();
 const initial=new URLSearchParams(location.search).get('id');
 if(initial) showMotor(initial);
 </script>
