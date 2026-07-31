@@ -85,6 +85,11 @@
     .defect-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
     .defect-card-broken{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);font-size:13px}
     .defect-card-broken input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+    .ac-wrap{position:relative}
+    .ac-list{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 30px #0f172a22;max-height:190px;overflow-y:auto;z-index:20}
+    .ac-list.hidden{display:none}
+    .ac-item{padding:9px 12px;font-size:14px;cursor:pointer;color:var(--ink)}
+    .ac-item:hover{background:var(--soft)}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
     @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}.defect-card-grid{grid-template-columns:1fr}.defect-card-foot{flex-direction:column;align-items:stretch}}
     @media print{body{background:white}.hero,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
@@ -165,9 +170,6 @@
         <article class="panel" data-panel="defect">
           <div class="panel-head"><h4>Дефектная ведомость</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-defect"></div></div></div>
           <div id="parts-defect"></div>
-          <datalist id="partNamesList"></datalist>
-          <datalist id="bearingBrandsList"></datalist>
-          <datalist id="bearingSizesList"></datalist>
         </article>
         <article class="panel" data-panel="test">
           <div class="panel-head"><h4>Акт испытаний</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-test"></div></div></div>
@@ -411,13 +413,31 @@ function collectUsedValues(field){
   });
   return set;
 }
-function refreshPartsDatalists(){
-  const names=new Set(BASE_PART_NAMES); collectUsedValues('name').forEach(v=>names.add(v));
-  const brands=new Set(BASE_BEARING_BRANDS); collectUsedValues('brand').forEach(v=>brands.add(v));
-  const sizes=new Set(BASE_BEARING_SIZES); collectUsedValues('size').forEach(v=>sizes.add(v));
-  $('#partNamesList').innerHTML=[...names].map(v=>`<option value="${escapeHtml(v)}">`).join('');
-  $('#bearingBrandsList').innerHTML=[...brands].map(v=>`<option value="${escapeHtml(v)}">`).join('');
-  $('#bearingSizesList').innerHTML=[...sizes].map(v=>`<option value="${escapeHtml(v)}">`).join('');
+function getSourceList(source){
+  const base=source==='name'?BASE_PART_NAMES:source==='brand'?BASE_BEARING_BRANDS:BASE_BEARING_SIZES;
+  const set=new Set(base);
+  collectUsedValues(source).forEach(v=>set.add(v));
+  return Array.from(set);
+}
+function filterSuggestions(source,query){
+  const list=getSourceList(source);
+  const q=query.trim().toLowerCase();
+  const matches=q?list.filter(v=>v.toLowerCase().includes(q)):list;
+  return matches.slice(0,8);
+}
+function showSuggestions(input){
+  const wrap=input.closest('.ac-wrap');
+  const listEl=wrap&&wrap.querySelector('.ac-list');
+  if(!listEl) return;
+  const matches=filterSuggestions(input.dataset.source,input.value);
+  if(!matches.length){ listEl.classList.add('hidden'); listEl.innerHTML=''; return; }
+  listEl.innerHTML=matches.map(v=>`<div class="ac-item" data-value="${escapeHtml(v)}">${escapeHtml(v)}</div>`).join('');
+  listEl.classList.remove('hidden');
+}
+function hideSuggestions(input){
+  const wrap=input.closest('.ac-wrap');
+  const listEl=wrap&&wrap.querySelector('.ac-list');
+  if(listEl){ listEl.classList.add('hidden'); listEl.innerHTML=''; }
 }
 
 function renderDefect(record,readOnly){
@@ -428,12 +448,12 @@ function renderDefect(record,readOnly){
     const rows=items.map(it=>`<tr><td>${escapeHtml(it.name)}</td><td><span class="defect-badge ${it.broken?'bad':'ok'}">${it.broken?'Сломана':'Исправна'}</span></td><td>${escapeHtml(it.brand||'—')}</td><td>${escapeHtml(it.size||'—')}</td></tr>`).join('');
     $('#parts-defect').innerHTML=`<div class="defect-table-wrap"><table class="defect-table"><thead><tr><th>Деталь</th><th>Состояние</th><th>Марка</th><th>Размер</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }else{
-    refreshPartsDatalists();
+    const acField=(idx,field,source,value,label)=>`<label>${label}<div class="ac-wrap"><input type="text" autocomplete="off" data-idx="${idx}" data-field="${field}" data-source="${source}" value="${escapeHtml(value)}"><div class="ac-list hidden"></div></div></label>`;
     const cards=items.map((it,i)=>`<div class="defect-card">
       <div class="defect-card-grid">
-        <label>Деталь<input type="text" list="partNamesList" data-idx="${i}" data-field="name" value="${escapeHtml(it.name)}"></label>
-        <label>Марка подшипника<input type="text" list="bearingBrandsList" data-idx="${i}" data-field="brand" value="${escapeHtml(it.brand||'')}"></label>
-        <label>Размер подшипника<input type="text" list="bearingSizesList" data-idx="${i}" data-field="size" value="${escapeHtml(it.size||'')}"></label>
+        ${acField(i,'name','name',it.name,'Деталь')}
+        ${acField(i,'brand','brand',it.brand||'','Марка подшипника')}
+        ${acField(i,'size','size',it.size||'','Размер подшипника')}
       </div>
       <div class="defect-card-foot">
         <label class="defect-card-broken"><input type="checkbox" data-idx="${i}" data-field="broken" ${it.broken?'checked':''}> Сломана</label>
@@ -607,6 +627,29 @@ $('#stepper').addEventListener('click',e=>{
   const btn=e.target.closest('.step');if(!btn) return;
   setStage(Number(btn.dataset.stage));
 });
+$('#parts-defect').addEventListener('input',e=>{
+  const input=e.target.closest('.ac-wrap input');
+  if(!input) return;
+  showSuggestions(input);
+});
+$('#parts-defect').addEventListener('focusin',e=>{
+  const input=e.target.closest('.ac-wrap input');
+  if(!input) return;
+  showSuggestions(input);
+});
+$('#parts-defect').addEventListener('focusout',e=>{
+  const input=e.target.closest('.ac-wrap input');
+  if(!input) return;
+  hideSuggestions(input);
+});
+$('#parts-defect').addEventListener('pointerdown',e=>{
+  const item=e.target.closest('.ac-item');
+  if(!item) return;
+  e.preventDefault();
+  const input=item.closest('.ac-wrap').querySelector('input');
+  input.value=item.dataset.value;
+  hideSuggestions(input);
+});
 $('#advanceBtn').addEventListener('click',advanceStage);
 window.addEventListener('beforeprint',()=>{
   if(!current) return;
@@ -616,7 +659,6 @@ window.addEventListener('beforeprint',()=>{
 });
 
 refreshChips();
-refreshPartsDatalists();
 const initial=new URLSearchParams(location.search).get('id');
 if(initial) showMotor(initial);
 </script>
