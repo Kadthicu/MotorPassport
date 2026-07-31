@@ -8,47 +8,280 @@
   <style>
     :root{--bg:#eef2f7;--card:#fff;--ink:#142033;--muted:#667085;--accent:#2563eb;--accent2:#0f172a;--ok:#15803d;--warn:#b45309;--line:#d9e0ea;--soft:#f8fafc}
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#e9eef6 0,#f8fafc 45%,#edf2f7 100%);color:var(--ink);min-height:100vh}
-    button,input{font:inherit} .shell{max-width:980px;margin:auto;padding:18px 14px 48px}.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}.logo{width:46px;height:46px;border-radius:14px;background:var(--accent2);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 8px 25px #0f172a2b}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;border-radius:24px;padding:24px;box-shadow:0 20px 50px #0f172a2e}.hero h2{margin:0 0 8px;font-size:clamp(25px,5vw,40px);line-height:1.08}.hero p{margin:0 0 20px;color:#dbeafe;max-width:670px}.search{display:flex;gap:10px;background:#fff;padding:7px;border-radius:16px}.search input{flex:1;min-width:0;border:0;outline:0;padding:12px 14px;color:#111827}.search button{border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;padding:12px 20px;cursor:pointer}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chip{border:1px solid #ffffff38;background:#ffffff12;color:white;border-radius:999px;padding:7px 10px;font-size:12px;cursor:pointer}.notice{display:none;margin-top:16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:13px 15px}.passport{display:none;margin-top:18px}.summary{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 12px 36px #0f172a15}.summary-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;color:var(--muted)}.summary h3{font-size:28px;margin:6px 0}.status{white-space:nowrap;padding:8px 12px;border-radius:999px;background:#dcfce7;color:#166534;font-weight:800;font-size:13px}.serial{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-weight:800}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}.panel{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 10px 30px #0f172a10}.panel h4{margin:0 0 14px;font-size:16px}.rows{display:grid;gap:0}.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row span:first-child{color:var(--muted)}.row strong{text-align:right}.tests{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.test{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:13px}.test b{display:block;font-size:18px;margin-top:4px}.test small{color:var(--muted)}.history{border-left:3px solid #bfdbfe;padding-left:14px;display:grid;gap:15px}.event b{display:block}.event small{color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:var(--accent2);color:#fff}.secondary{background:#e2e8f0;color:#1e293b}.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px}
-    @media(max-width:720px){.grid{grid-template-columns:1fr}.tests{grid-template-columns:1fr}.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}}
-    @media print{body{background:white}.hero,.top,.actions,.foot,.notice,.demo{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.panel,.summary{box-shadow:none;border:1px solid #ddd}.grid{grid-template-columns:1fr 1fr}}
+    button,input,textarea,select{font:inherit} .shell{max-width:980px;margin:auto;padding:18px 14px 48px}.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}.logo{width:46px;height:46px;border-radius:14px;background:var(--accent2);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 8px 25px #0f172a2b}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;border-radius:24px;padding:24px;box-shadow:0 20px 50px #0f172a2e}.hero h2{margin:0 0 16px;font-size:clamp(22px,4.5vw,32px);line-height:1.1}.search{display:flex;gap:10px;background:#fff;padding:7px;border-radius:16px}.search input{flex:1;min-width:0;border:0;outline:0;padding:12px 14px;color:#111827}.search button{border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;padding:12px 20px;cursor:pointer}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chip{border:1px solid #ffffff38;background:#ffffff12;color:white;border-radius:999px;padding:7px 10px;font-size:12px;cursor:pointer}.notice{display:none;margin-top:16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:13px 15px}.passport{display:none;margin-top:18px}.summary{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 12px 36px #0f172a15}.summary-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;color:var(--muted)}.summary h3{font-size:28px;margin:6px 0}.status{white-space:nowrap;padding:8px 12px;border-radius:999px;background:#dcfce7;color:#166534;font-weight:800;font-size:13px}.serial{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-weight:800}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:var(--accent2);color:#fff}.secondary{background:#e2e8f0;color:#1e293b}
+    .stepper-wrap{background:var(--card);border-radius:22px;padding:18px 20px;box-shadow:0 12px 36px #0f172a15;margin-top:14px}
+    .stepper{display:flex;gap:6px}
+    .step{flex:1;border:0;background:none;padding:10px 6px;border-radius:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+    .step .dot{width:28px;height:28px;border-radius:50%;background:#e2e8f0;color:#475569;display:grid;place-items:center;font-weight:800;font-size:13px}
+    .step .label{font-size:12px;font-weight:700;color:var(--ink)}
+    .step small{color:var(--muted);font-size:10px;line-height:1.3}
+    .step.done .dot{background:var(--ok);color:#fff}
+    .step.current .dot{background:var(--accent);color:#fff}
+    .step.current{outline:2px solid var(--accent)}
+    .step.upcoming{opacity:.55}
+    .advance-row{display:flex;justify-content:flex-end;margin-top:10px}
+    .advance-row .btn:disabled{opacity:.4;cursor:default}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 -1px}
+    .tab{border:0;background:#e2e8f0;color:#334155;padding:11px 8px;border-radius:14px 14px 0 0;font-weight:700;cursor:pointer;font-size:13px}
+    .tab.active{background:var(--card);color:var(--accent2)}
+    .tabpanels{background:var(--card);border-radius:0 0 22px 22px;box-shadow:0 12px 36px #0f172a15;overflow:hidden}
+    .panel{padding:20px;display:none}
+    .panel.active{display:block}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .panel-head h4{margin:0;font-size:16px}
+    .rows{display:grid;gap:0}.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row span:first-child{color:var(--muted)}.row strong{text-align:right}
+    .row.edit{align-items:flex-start}.row.edit span{padding-top:8px;flex:0 0 42%}
+    .row.edit input,.row.edit textarea,.row.edit select{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);min-width:0}
+    .row.edit textarea{min-height:60px;resize:vertical}
+    .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
+    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}}
+    @media print{body{background:white}.hero,.top,.actions,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.panel{display:block!important;border-bottom:1px solid #ddd;page-break-inside:avoid}.step{cursor:default}}
   </style>
 </head>
 <body>
   <main class="shell">
     <header class="top"><div class="logo">MP</div><div class="brand"><h1>MotorPassport</h1><p>Цифровой паспорт ремонта электродвигателя</p></div></header>
     <section class="hero">
-      <div class="eyebrow" style="color:#93c5fd">Ремонтная система</div>
       <h2>Найдите двигатель по его ID</h2>
-      <p>Введите порядковый номер двигателя, чтобы открыть сведения о приёмке, дефектации, ремонте, испытаниях и выдаче заказчику.</p>
       <form class="search" id="searchForm"><input id="motorId" type="number" inputmode="numeric" min="1" autocomplete="off" placeholder="Например: 1542" aria-label="ID двигателя"><button>Найти двигатель</button></form>
-      <div class="examples"><button class="chip" data-id="1542">1542</button><button class="chip" data-id="1543">1543</button><button class="chip" data-id="1544">1544</button></div>
+      <div class="examples"><button class="chip" data-id="1542" type="button">1542</button><button class="chip" data-id="1543" type="button">1543</button><button class="chip" data-id="1544" type="button">1544</button></div>
     </section>
     <div class="notice" id="notice">Двигатель с таким ID не найден. Проверьте номер и попробуйте снова.</div>
     <section class="passport" id="passport">
       <article class="summary">
         <div class="summary-head"><div><div class="eyebrow">Цифровой паспорт ремонта</div><h3 id="model"></h3><div class="serial" id="idLabel"></div></div><div class="status" id="status"></div></div>
-        <div class="actions"><button class="btn primary" onclick="window.print()">Печать / PDF</button><button class="btn secondary" id="copyBtn">Скопировать ссылку</button></div>
+        <div class="actions">
+          <button class="btn primary" onclick="window.print()" type="button">Печать / PDF</button>
+          <button class="btn secondary" id="copyBtn" type="button">Скопировать ссылку</button>
+          <button class="btn secondary" id="resetBtn" type="button">Сбросить к демо-данным</button>
+        </div>
       </article>
-      <div class="grid">
-        <article class="panel"><h4>Сведения о ремонте</h4><div class="rows" id="mainRows"></div></article>
-        <article class="panel"><h4>Технические характеристики</h4><div class="rows" id="specRows"></div></article>
-        <article class="panel"><h4>Результаты испытаний</h4><div class="tests" id="tests"></div></article>
-        <article class="panel"><h4>Заменённые узлы и комплектующие</h4><div class="rows" id="parts"></div></article>
-        <article class="panel" style="grid-column:1/-1"><h4>История ремонта</h4><div class="history" id="history"></div></article>
+
+      <div class="stepper-wrap">
+        <div class="stepper" id="stepper"></div>
+        <div class="advance-row"><button class="btn primary" id="advanceBtn" type="button">Следующий этап →</button></div>
       </div>
-      <p class="demo">Демонстрационный прототип. Данные вымышлены и предназначены для презентации концепции.</p>
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="acceptance" type="button">Акт приёмки</button>
+        <button class="tab" data-tab="test" type="button">Акт испытаний</button>
+        <button class="tab" data-tab="tz" type="button">Техническое задание</button>
+      </div>
+      <div class="tabpanels" id="tabpanels">
+        <article class="panel active" data-panel="acceptance">
+          <div class="panel-head"><h4>Акт приёмки</h4><div id="actions-acceptance"></div></div>
+          <div class="rows" id="rows-acceptance"></div>
+        </article>
+        <article class="panel" data-panel="test">
+          <div class="panel-head"><h4>Акт испытаний</h4><div id="actions-test"></div></div>
+          <div class="rows" id="rows-test"></div>
+        </article>
+        <article class="panel" data-panel="tz">
+          <div class="panel-head"><h4>Техническое задание</h4><div id="actions-tz"></div></div>
+          <div class="rows" id="rows-tz"></div>
+        </article>
+      </div>
+      <p class="demo">Демонстрационный прототип. Изменения сохраняются локально в этом браузере (localStorage).</p>
     </section>
     <footer class="foot">MotorPassport · прототип цифрового учёта ремонта электродвигателей</footer>
   </main>
 <script>
-const motors={
- '1542':{model:'Электродвигатель ТЭП-45',status:'Ремонт завершён',main:[['ID двигателя','1542'],['Дата приёмки','18.07.2026'],['Ремонтный участок','Цех № 2'],['Ответственный','Иванов И. И.'],['Заказ-наряд','ЗН-260718-14']],spec:[['Мощность','45 кВт'],['Напряжение','380 В'],['Частота вращения','1 500 об/мин'],['Степень защиты','IP55'],['Масса','286 кг']],tests:[['Сопротивление изоляции','150 МОм','Норма ≥ 100 МОм'],['Испытательное давление','4 бар','Утечек нет'],['Вибрация','1,6 мм/с','В пределах нормы']],parts:[['Подшипники','SKF 6312 / 6310'],['Тормоз','Электромагнитный ТМ-45'],['Уплотнения','Комплект заменён'],['Муфта','МУВП-400']],history:[['18.07.2026','Двигатель принят в ремонт','Иванов И. И.'],['18.07.2026','Проведена дефектация','Мастер участка'],['19.07.2026','Ремонтные работы завершены','Иванов И. И.'],['20.07.2026','Испытания после ремонта пройдены','Петров А. С.'],['20.07.2026','Контроль ОТК: принято','Сидорова Е. В.']]},
- '1543':{model:'Электродвигатель ТЭП-75',status:'Готов к выдаче',main:[['ID двигателя','1543'],['Дата приёмки','19.07.2026'],['Ремонтный участок','Цех № 2'],['Ответственный','Смирнов Д. В.'],['Заказ-наряд','ЗН-260719-03']],spec:[['Мощность','75 кВт'],['Напряжение','660 В'],['Частота вращения','1 000 об/мин'],['Степень защиты','IP54'],['Масса','412 кг']],tests:[['Сопротивление изоляции','180 МОм','Норма ≥ 100 МОм'],['Испытательное давление','3,5 бар','Утечек нет'],['Вибрация','1,9 мм/с','В пределах нормы']],parts:[['Подшипники','FAG 6316 / 6314'],['Тормоз','Электромагнитный ТМ-75'],['Обмотка статора','Восстановлена'],['Муфта','МУВП-500']],history:[['19.07.2026','Двигатель принят в ремонт','Смирнов Д. В.'],['19.07.2026','Выполнена дефектация','Мастер участка'],['20.07.2026','Ремонт завершён','Смирнов Д. В.'],['20.07.2026','Испытания завершены','Петров А. С.'],['21.07.2026','Подготовлен к выдаче заказчику','Склад № 1']]},
- '1544':{model:'Электродвигатель ТЭП-30',status:'На испытаниях',main:[['ID двигателя','1544'],['Дата приёмки','21.07.2026'],['Ремонтный участок','Цех № 1'],['Ответственный','Кузнецов М. Н.'],['Заказ-наряд','ЗН-260721-08']],spec:[['Мощность','30 кВт'],['Напряжение','380 В'],['Частота вращения','1 500 об/мин'],['Степень защиты','IP55'],['Масса','218 кг']],tests:[['Сопротивление изоляции','132 МОм','Испытание пройдено'],['Испытательное давление','—','Ожидается'],['Вибрация','—','Ожидается']],parts:[['Подшипники','SKF 6310 / 6308'],['Тормоз','Электромагнитный ТМ-30'],['Клеммная коробка','Отремонтирована'],['Муфта','МУВП-315']],history:[['21.07.2026','Двигатель принят в ремонт','Кузнецов М. Н.'],['21.07.2026','Дефектация завершена','Мастер участка'],['22.07.2026','Ремонтные работы завершены','Кузнецов М. Н.'],['22.07.2026','Передан на испытательный стенд','Лаборатория № 1']]}
+const STAGES=['Приёмка','Дефектация','Ремонт','Испытания','Выдача'];
+const STATUS_BY_STAGE=['Принят в ремонт','На дефектации','В ремонте','На испытаниях','Выдан заказчику'];
+
+const SCHEMAS={
+  acceptance:[
+    {key:'date',label:'Дата приёмки'},
+    {key:'acceptedBy',label:'Кем принят'},
+    {key:'department',label:'Участок'},
+    {key:'conditionOnReceipt',label:'Состояние при приёме',type:'textarea'},
+    {key:'declaredFault',label:'Заявленная неисправность',type:'textarea'},
+    {key:'completeness',label:'Комплектность / заменённые узлы',type:'textarea'},
+    {key:'workOrder',label:'Заказ-наряд'},
+    {key:'notes',label:'Примечания',type:'textarea'}
+  ],
+  test:[
+    {key:'date',label:'Дата испытаний'},
+    {key:'tester',label:'Испытатель'},
+    {key:'insulationResistance',label:'Сопротивление изоляции'},
+    {key:'testPressure',label:'Испытательное давление'},
+    {key:'vibration',label:'Вибрация'},
+    {key:'conclusion',label:'Заключение',type:'select',options:['Годен','Не годен','Требует доработки','Испытания продолжаются']},
+    {key:'notes',label:'Примечания',type:'textarea'}
+  ],
+  tz:[
+    {key:'power',label:'Мощность'},
+    {key:'voltage',label:'Напряжение'},
+    {key:'rpm',label:'Частота вращения'},
+    {key:'ip',label:'Степень защиты'},
+    {key:'mass',label:'Масса'},
+    {key:'scopeOfWork',label:'Объём работ',type:'textarea'},
+    {key:'customerRequirements',label:'Особые требования заказчика',type:'textarea'}
+  ]
 };
-const $=s=>document.querySelector(s); const rows=(arr)=>arr.map(x=>`<div class="row"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');
-function showMotor(raw){const id=String(raw).trim();const m=motors[id];$('#notice').style.display=m?'none':'block';$('#passport').style.display=m?'block':'none';if(!m)return;$('#motorId').value=id;$('#model').textContent=m.model;$('#idLabel').textContent='ID: '+id;$('#status').textContent=m.status;$('#mainRows').innerHTML=rows(m.main);$('#specRows').innerHTML=rows(m.spec);$('#parts').innerHTML=rows(m.parts);$('#tests').innerHTML=m.tests.map(t=>`<div class="test"><small>${t[0]}</small><b>${t[1]}</b><small>${t[2]}</small></div>`).join('');$('#history').innerHTML=m.history.map(e=>`<div class="event"><b>${e[1]}</b><small>${e[0]} · ${e[2]}</small></div>`).join('');const u=new URL(location.href);u.searchParams.set('id',id);history.replaceState({},'',u);setTimeout(()=>$('#passport').scrollIntoView({behavior:'smooth',block:'start'}),50)}
-$('#searchForm').addEventListener('submit',e=>{e.preventDefault();showMotor($('#motorId').value)});document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>showMotor(b.dataset.id));$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);$('#copyBtn').textContent='Ссылка скопирована';setTimeout(()=>$('#copyBtn').textContent='Скопировать ссылку',1500)}catch{prompt('Скопируйте ссылку:',location.href)}};const initial=new URLSearchParams(location.search).get('id');if(initial)showMotor(initial);
+const FIELD_MAP={acceptance:'acceptanceAct',test:'testAct',tz:'tz'};
+
+const motors={
+  '1542':{
+    model:'Электродвигатель ТЭП-45',
+    stage:{current:4,log:[
+      {date:'18.07.2026',actor:'Иванов И. И.'},
+      {date:'18.07.2026',actor:'Мастер участка'},
+      {date:'19.07.2026',actor:'Иванов И. И.'},
+      {date:'20.07.2026',actor:'Петров А. С.'},
+      {date:'20.07.2026',actor:'Сидорова Е. В.'}
+    ]},
+    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',conditionOnReceipt:'Не запускается, посторонний шум подшипника',declaredFault:'Заклинивание подшипника, перегрев обмотки',completeness:'Полный комплект. Заменены: подшипники SKF 6312/6310, электромагнитный тормоз ТМ-45, уплотнения, муфта МУВП-400',workOrder:'ЗН-260718-14',notes:''},
+    testAct:{date:'20.07.2026',tester:'Петров А. С.',insulationResistance:'150 МОм',testPressure:'4 бар',vibration:'1,6 мм/с',conclusion:'Годен',notes:'Утечек нет, вибрация в пределах нормы'},
+    tz:{power:'45 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'286 кг',scopeOfWork:'Замена подшипников, ревизия тормоза, замена уплотнений и муфты',customerRequirements:'Восстановить в срок до 20.07.2026'}
+  },
+  '1543':{
+    model:'Электродвигатель ТЭП-75',
+    stage:{current:2,log:[
+      {date:'19.07.2026',actor:'Смирнов Д. В.'},
+      {date:'19.07.2026',actor:'Мастер участка'},
+      {date:'20.07.2026',actor:'Смирнов Д. В.'},
+      null,
+      null
+    ]},
+    acceptanceAct:{date:'19.07.2026',acceptedBy:'Смирнов Д. В.',department:'Цех № 2',conditionOnReceipt:'Гудит при пуске, повышенная вибрация',declaredFault:'Износ подшипников, повреждена обмотка статора',completeness:'Полный комплект, требуется восстановление обмотки',workOrder:'ЗН-260719-03',notes:''},
+    testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Требует доработки',notes:'Испытания не проводились — двигатель в ремонте'},
+    tz:{power:'75 кВт',voltage:'660 В',rpm:'1 000 об/мин',ip:'IP54',mass:'412 кг',scopeOfWork:'Замена подшипников FAG 6316/6314, восстановление обмотки статора, замена муфты МУВП-500',customerRequirements:'Особые требования отсутствуют'}
+  },
+  '1544':{
+    model:'Электродвигатель ТЭП-30',
+    stage:{current:3,log:[
+      {date:'21.07.2026',actor:'Кузнецов М. Н.'},
+      {date:'21.07.2026',actor:'Мастер участка'},
+      {date:'22.07.2026',actor:'Кузнецов М. Н.'},
+      {date:'22.07.2026',actor:'Лаборатория № 1'},
+      null
+    ]},
+    acceptanceAct:{date:'21.07.2026',acceptedBy:'Кузнецов М. Н.',department:'Цех № 1',conditionOnReceipt:'Повреждена клеммная коробка',declaredFault:'Повреждение клеммной коробки, требуется дефектация обмотки',completeness:'Полный комплект',workOrder:'ЗН-260721-08',notes:''},
+    testAct:{date:'22.07.2026',tester:'Лаборатория № 1',insulationResistance:'132 МОм',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:'Ожидаются испытания давлением и на вибрацию'},
+    tz:{power:'30 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'218 кг',scopeOfWork:'Ремонт клеммной коробки, дефектация обмотки',customerRequirements:'Стандартные требования'}
+  }
+};
+
+const LS_PREFIX='motorpassport:';
+function loadMotor(id){
+  const raw=localStorage.getItem(LS_PREFIX+id);
+  if(raw){try{return JSON.parse(raw)}catch(e){}}
+  const seed=motors[id];
+  return seed?JSON.parse(JSON.stringify(seed)):null;
+}
+function saveMotor(id,record){localStorage.setItem(LS_PREFIX+id,JSON.stringify(record))}
+function resetMotor(id){localStorage.removeItem(LS_PREFIX+id)}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const $=s=>document.querySelector(s);
+let current=null;
+
+function renderStepper(record){
+  const cur=record.stage.current;
+  $('#stepper').innerHTML=STAGES.map((label,i)=>{
+    const cls=i<cur?'done':i===cur?'current':'upcoming';
+    const log=record.stage.log[i];
+    const sub=log?escapeHtml(log.date+(log.actor?' · '+log.actor:'')):'';
+    return `<button type="button" class="step ${cls}" data-stage="${i}"><span class="dot">${i<cur?'✓':i+1}</span><span class="label">${escapeHtml(label)}</span>${sub?`<small>${sub}</small>`:''}</button>`;
+  }).join('');
+  $('#status').textContent=STATUS_BY_STAGE[cur];
+  $('#advanceBtn').disabled=cur>=STAGES.length-1;
+}
+
+function renderPanel(docKey,record,readOnly){
+  const schema=SCHEMAS[docKey];
+  const data=record[FIELD_MAP[docKey]];
+  $('#rows-'+docKey).innerHTML=schema.map(f=>{
+    const val=data[f.key]??'';
+    if(readOnly) return `<div class="row"><span>${escapeHtml(f.label)}</span><strong>${escapeHtml(val)}</strong></div>`;
+    if(f.type==='textarea') return `<div class="row edit"><span>${escapeHtml(f.label)}</span><textarea data-key="${f.key}">${escapeHtml(val)}</textarea></div>`;
+    if(f.type==='select') return `<div class="row edit"><span>${escapeHtml(f.label)}</span><select data-key="${f.key}">${f.options.map(o=>`<option ${o===val?'selected':''}>${escapeHtml(o)}</option>`).join('')}</select></div>`;
+    return `<div class="row edit"><span>${escapeHtml(f.label)}</span><input data-key="${f.key}" value="${escapeHtml(val)}"></div>`;
+  }).join('');
+  $('#actions-'+docKey).innerHTML=readOnly
+    ?`<button class="btn secondary" data-act="edit" data-doc="${docKey}" type="button">Редактировать</button>`
+    :`<button class="btn primary" data-act="save" data-doc="${docKey}" type="button">Сохранить</button> <button class="btn secondary" data-act="cancel" data-doc="${docKey}" type="button">Отмена</button>`;
+}
+
+function saveEdit(docKey){
+  const schema=SCHEMAS[docKey];
+  const data=current.record[FIELD_MAP[docKey]];
+  schema.forEach(f=>{
+    const el=document.querySelector(`#rows-${docKey} [data-key="${f.key}"]`);
+    if(el) data[f.key]=el.value;
+  });
+  saveMotor(current.id,current.record);
+  renderPanel(docKey,current.record,true);
+}
+
+function todayStr(){return new Date().toLocaleDateString('ru-RU')}
+function setStage(i){
+  const actor=prompt('Кто выполняет переход на этап «'+STAGES[i]+'»?','')||'';
+  current.record.stage.current=i;
+  current.record.stage.log[i]={date:todayStr(),actor};
+  saveMotor(current.id,current.record);
+  renderStepper(current.record);
+}
+function advanceStage(){
+  if(current.record.stage.current<STAGES.length-1) setStage(current.record.stage.current+1);
+}
+
+function showMotor(raw){
+  const id=String(raw).trim();
+  const record=loadMotor(id);
+  $('#notice').style.display=record?'none':'block';
+  $('#passport').style.display=record?'block':'none';
+  if(!record) return;
+  current={id,record};
+  $('#motorId').value=id;
+  $('#model').textContent=record.model;
+  $('#idLabel').textContent='ID: '+id;
+  renderStepper(record);
+  ['acceptance','test','tz'].forEach(k=>renderPanel(k,record,true));
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===0));
+  const u=new URL(location.href);u.searchParams.set('id',id);history.replaceState({},'',u);
+  setTimeout(()=>$('#passport').scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+
+$('#searchForm').addEventListener('submit',e=>{e.preventDefault();showMotor($('#motorId').value)});
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>showMotor(b.dataset.id));
+$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);$('#copyBtn').textContent='Ссылка скопирована';setTimeout(()=>$('#copyBtn').textContent='Скопировать ссылку',1500)}catch{prompt('Скопируйте ссылку:',location.href)}};
+$('#resetBtn').onclick=()=>{
+  if(!current) return;
+  if(confirm('Сбросить данные двигателя к демонстрационным значениям? Все внесённые правки будут потеряны.')){
+    resetMotor(current.id);
+    showMotor(current.id);
+  }
+};
+$('#tabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.tab');if(!btn) return;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab));
+});
+$('#tabpanels').addEventListener('click',e=>{
+  const btn=e.target.closest('button[data-act]');if(!btn) return;
+  const docKey=btn.dataset.doc;
+  if(btn.dataset.act==='edit') renderPanel(docKey,current.record,false);
+  if(btn.dataset.act==='save') saveEdit(docKey);
+  if(btn.dataset.act==='cancel') renderPanel(docKey,current.record,true);
+});
+$('#stepper').addEventListener('click',e=>{
+  const btn=e.target.closest('.step');if(!btn) return;
+  setStage(Number(btn.dataset.stage));
+});
+$('#advanceBtn').addEventListener('click',advanceStage);
+window.addEventListener('beforeprint',()=>{
+  if(!current) return;
+  ['acceptance','test','tz'].forEach(k=>renderPanel(k,current.record,true));
+});
+
+const initial=new URLSearchParams(location.search).get('id');
+if(initial) showMotor(initial);
 </script>
 </body>
 </html>
