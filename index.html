@@ -21,8 +21,8 @@
     .step.upcoming{opacity:.55}
     .advance-row{display:flex;justify-content:flex-end;margin-top:10px}
     .advance-row .btn:disabled{opacity:.4;cursor:default}
-    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 -1px}
-    .tab{border:0;background:#e2e8f0;color:#334155;padding:11px 8px;border-radius:14px 14px 0 0;font-weight:700;cursor:pointer;font-size:13px}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 -1px}
+    .tab{border:0;background:#e2e8f0;color:#334155;padding:11px 6px;border-radius:14px 14px 0 0;font-weight:700;cursor:pointer;font-size:12px}
     .tab.active{background:var(--card);color:var(--accent2)}
     .tabpanels{background:var(--card);border-radius:0 0 22px 22px;box-shadow:0 12px 36px #0f172a15;overflow:hidden}
     .panel{padding:20px;display:none}
@@ -33,9 +33,17 @@
     .row.edit{align-items:flex-start}.row.edit span{padding-top:8px;flex:0 0 42%}
     .row.edit input,.row.edit textarea,.row.edit select{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);min-width:0}
     .row.edit textarea{min-height:60px;resize:vertical}
+    .checklist{display:grid;gap:0;margin-bottom:16px}
+    .check-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+    .check-row:last-child{border-bottom:0}
+    .check-row input[type=checkbox]{width:18px;height:18px;flex:0 0 auto;accent-color:var(--accent);cursor:pointer}
+    .check-row span.txt.done{color:var(--muted);text-decoration:line-through}
+    .check-row.edit input[type=text]{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+    .icon-btn{border:0;background:#fee2e2;color:#b91c1c;border-radius:8px;width:30px;height:30px;flex:0 0 auto;cursor:pointer;font-weight:800}
+    .add-item{margin-top:10px}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
-    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}}
-    @media print{body{background:white}.hero,.top,.actions,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.panel{display:block!important;border-bottom:1px solid #ddd;page-break-inside:avoid}.step{cursor:default}}
+    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}}
+    @media print{body{background:white}.hero,.top,.actions,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.panel{display:block!important;border-bottom:1px solid #ddd;page-break-inside:avoid}.step{cursor:default}}
   </style>
 </head>
 <body>
@@ -63,12 +71,17 @@
       </div>
 
       <div class="tabs" id="tabs">
-        <button class="tab active" data-tab="acceptance" type="button">Акт приёмки</button>
+        <button class="tab active" data-tab="specs" type="button">Характеристики</button>
+        <button class="tab" data-tab="acceptance" type="button">Акт приёмки</button>
         <button class="tab" data-tab="test" type="button">Акт испытаний</button>
         <button class="tab" data-tab="tz" type="button">Техническое задание</button>
       </div>
       <div class="tabpanels" id="tabpanels">
-        <article class="panel active" data-panel="acceptance">
+        <article class="panel active" data-panel="specs">
+          <div class="panel-head"><h4>Технические характеристики</h4><div id="actions-specs"></div></div>
+          <div class="rows" id="rows-specs"></div>
+        </article>
+        <article class="panel" data-panel="acceptance">
           <div class="panel-head"><h4>Акт приёмки</h4><div id="actions-acceptance"></div></div>
           <div class="rows" id="rows-acceptance"></div>
         </article>
@@ -78,6 +91,7 @@
         </article>
         <article class="panel" data-panel="tz">
           <div class="panel-head"><h4>Техническое задание</h4><div id="actions-tz"></div></div>
+          <div class="checklist" id="checklist-tz"></div>
           <div class="rows" id="rows-tz"></div>
         </article>
       </div>
@@ -90,6 +104,14 @@ const STAGES=['Приёмка','Дефектация','Ремонт','Испыт
 const STATUS_BY_STAGE=['Принят в ремонт','На дефектации','В ремонте','На испытаниях','Выдан заказчику'];
 
 const SCHEMAS={
+  specs:[
+    {key:'power',label:'Мощность'},
+    {key:'voltage',label:'Напряжение'},
+    {key:'rpm',label:'Частота вращения'},
+    {key:'ip',label:'Степень защиты'},
+    {key:'mass',label:'Масса'},
+    {key:'brake',label:'Тормоз'}
+  ],
   acceptance:[
     {key:'date',label:'Дата приёмки'},
     {key:'acceptedBy',label:'Кем принят'},
@@ -108,22 +130,13 @@ const SCHEMAS={
     {key:'vibration',label:'Вибрация'},
     {key:'conclusion',label:'Заключение',type:'select',options:['Годен','Не годен','Требует доработки','Испытания продолжаются']},
     {key:'notes',label:'Примечания',type:'textarea'}
-  ],
-  tz:[
-    {key:'power',label:'Мощность'},
-    {key:'voltage',label:'Напряжение'},
-    {key:'rpm',label:'Частота вращения'},
-    {key:'ip',label:'Степень защиты'},
-    {key:'mass',label:'Масса'},
-    {key:'scopeOfWork',label:'Объём работ',type:'textarea'},
-    {key:'customerRequirements',label:'Особые требования заказчика',type:'textarea'}
   ]
 };
-const FIELD_MAP={acceptance:'acceptanceAct',test:'testAct',tz:'tz'};
+const FIELD_MAP={specs:'specs',acceptance:'acceptanceAct',test:'testAct'};
 
 const motors={
   '1542':{
-    model:'Электродвигатель ТЭП-45',
+    model:'Электродвигатель АИР200M4',
     stage:{current:4,log:[
       {date:'18.07.2026',actor:'Иванов И. И.'},
       {date:'18.07.2026',actor:'Мастер участка'},
@@ -131,12 +144,22 @@ const motors={
       {date:'20.07.2026',actor:'Петров А. С.'},
       {date:'20.07.2026',actor:'Сидорова Е. В.'}
     ]},
-    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',conditionOnReceipt:'Не запускается, посторонний шум подшипника',declaredFault:'Заклинивание подшипника, перегрев обмотки',completeness:'Полный комплект. Заменены: подшипники SKF 6312/6310, электромагнитный тормоз ТМ-45, уплотнения, муфта МУВП-400',workOrder:'ЗН-260718-14',notes:''},
+    specs:{power:'45 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'286 кг',brake:'Электромагнитный тормоз ТЭП-45'},
+    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',conditionOnReceipt:'Не запускается, посторонний шум подшипника',declaredFault:'Заклинивание подшипника, перегрев обмотки',completeness:'Полный комплект. Заменены: подшипники SKF 6312/6310, уплотнения, муфта МУВП-400',workOrder:'ЗН-260718-14',notes:''},
     testAct:{date:'20.07.2026',tester:'Петров А. С.',insulationResistance:'150 МОм',testPressure:'4 бар',vibration:'1,6 мм/с',conclusion:'Годен',notes:'Утечек нет, вибрация в пределах нормы'},
-    tz:{power:'45 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'286 кг',scopeOfWork:'Замена подшипников, ревизия тормоза, замена уплотнений и муфты',customerRequirements:'Восстановить в срок до 20.07.2026'}
+    tz:{
+      workItems:[
+        {text:'Демонтаж и дефектация подшипниковых узлов',done:true},
+        {text:'Замена подшипников SKF 6312/6310',done:true},
+        {text:'Ревизия электромагнитного тормоза ТЭП-45',done:true},
+        {text:'Замена уплотнений и муфты МУВП-400',done:true},
+        {text:'Сборка и контрольные испытания',done:true}
+      ],
+      customerRequirements:'Восстановить в срок до 20.07.2026'
+    }
   },
   '1543':{
-    model:'Электродвигатель ТЭП-75',
+    model:'Электродвигатель АИР250S4',
     stage:{current:2,log:[
       {date:'19.07.2026',actor:'Смирнов Д. В.'},
       {date:'19.07.2026',actor:'Мастер участка'},
@@ -144,12 +167,23 @@ const motors={
       null,
       null
     ]},
+    specs:{power:'75 кВт',voltage:'660 В',rpm:'1 000 об/мин',ip:'IP54',mass:'412 кг',brake:'Электромагнитный тормоз ТЭП-75'},
     acceptanceAct:{date:'19.07.2026',acceptedBy:'Смирнов Д. В.',department:'Цех № 2',conditionOnReceipt:'Гудит при пуске, повышенная вибрация',declaredFault:'Износ подшипников, повреждена обмотка статора',completeness:'Полный комплект, требуется восстановление обмотки',workOrder:'ЗН-260719-03',notes:''},
     testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Требует доработки',notes:'Испытания не проводились — двигатель в ремонте'},
-    tz:{power:'75 кВт',voltage:'660 В',rpm:'1 000 об/мин',ip:'IP54',mass:'412 кг',scopeOfWork:'Замена подшипников FAG 6316/6314, восстановление обмотки статора, замена муфты МУВП-500',customerRequirements:'Особые требования отсутствуют'}
+    tz:{
+      workItems:[
+        {text:'Демонтаж двигателя и дефектация',done:true},
+        {text:'Извлечение и осмотр обмотки статора',done:true},
+        {text:'Восстановление обмотки статора',done:false},
+        {text:'Замена подшипников FAG 6316/6314',done:false},
+        {text:'Замена муфты МУВП-500',done:false},
+        {text:'Испытания после ремонта',done:false}
+      ],
+      customerRequirements:'Особые требования отсутствуют'
+    }
   },
   '1544':{
-    model:'Электродвигатель ТЭП-30',
+    model:'Электродвигатель АИР180M4',
     stage:{current:3,log:[
       {date:'21.07.2026',actor:'Кузнецов М. Н.'},
       {date:'21.07.2026',actor:'Мастер участка'},
@@ -157,9 +191,19 @@ const motors={
       {date:'22.07.2026',actor:'Лаборатория № 1'},
       null
     ]},
+    specs:{power:'30 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'218 кг',brake:'Электромагнитный тормоз ТЭП-30'},
     acceptanceAct:{date:'21.07.2026',acceptedBy:'Кузнецов М. Н.',department:'Цех № 1',conditionOnReceipt:'Повреждена клеммная коробка',declaredFault:'Повреждение клеммной коробки, требуется дефектация обмотки',completeness:'Полный комплект',workOrder:'ЗН-260721-08',notes:''},
     testAct:{date:'22.07.2026',tester:'Лаборатория № 1',insulationResistance:'132 МОм',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:'Ожидаются испытания давлением и на вибрацию'},
-    tz:{power:'30 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'218 кг',scopeOfWork:'Ремонт клеммной коробки, дефектация обмотки',customerRequirements:'Стандартные требования'}
+    tz:{
+      workItems:[
+        {text:'Демонтаж клеммной коробки и дефектация',done:true},
+        {text:'Ремонт / замена клеммной коробки',done:true},
+        {text:'Дефектация и проверка обмотки',done:true},
+        {text:'Испытание сопротивления изоляции',done:true},
+        {text:'Испытание давлением и на вибрацию',done:false}
+      ],
+      customerRequirements:'Стандартные требования'
+    }
   }
 };
 
@@ -218,6 +262,31 @@ function saveEdit(docKey){
   renderPanel(docKey,current.record,true);
 }
 
+function renderTz(record,readOnly){
+  const tz=record.tz;
+  const itemsHtml=tz.workItems.map((item,i)=>{
+    if(readOnly) return `<label class="check-row"><input type="checkbox" data-idx="${i}" ${item.done?'checked':''}><span class="txt${item.done?' done':''}">${escapeHtml(item.text)}</span></label>`;
+    return `<div class="check-row edit"><input type="checkbox" data-idx="${i}" ${item.done?'checked':''}><input type="text" data-idx="${i}" data-field="text" value="${escapeHtml(item.text)}"><button type="button" class="icon-btn" data-remove="${i}" title="Удалить">✕</button></div>`;
+  }).join('');
+  $('#checklist-tz').innerHTML=itemsHtml+(readOnly?'':'<button type="button" class="btn secondary add-item" id="addWorkItemBtn">+ Добавить работу</button>');
+  $('#rows-tz').innerHTML=readOnly
+    ?`<div class="row"><span>Особые требования заказчика</span><strong>${escapeHtml(tz.customerRequirements||'')}</strong></div>`
+    :`<div class="row edit"><span>Особые требования заказчика</span><textarea data-key="customerRequirements">${escapeHtml(tz.customerRequirements||'')}</textarea></div>`;
+  $('#actions-tz').innerHTML=readOnly
+    ?`<button class="btn secondary" data-act="edit" data-doc="tz" type="button">Редактировать</button>`
+    :`<button class="btn primary" data-act="save" data-doc="tz" type="button">Сохранить</button> <button class="btn secondary" data-act="cancel" data-doc="tz" type="button">Отмена</button>`;
+}
+
+function saveTz(){
+  document.querySelectorAll('#checklist-tz input[data-field="text"]').forEach(inp=>{
+    current.record.tz.workItems[Number(inp.dataset.idx)].text=inp.value;
+  });
+  const reqEl=document.querySelector('#rows-tz [data-key="customerRequirements"]');
+  if(reqEl) current.record.tz.customerRequirements=reqEl.value;
+  saveMotor(current.id,current.record);
+  renderTz(current.record,true);
+}
+
 function todayStr(){return new Date().toLocaleDateString('ru-RU')}
 function setStage(i){
   const actor=prompt('Кто выполняет переход на этап «'+STAGES[i]+'»?','')||'';
@@ -241,7 +310,8 @@ function showMotor(raw){
   $('#model').textContent=record.model;
   $('#idLabel').textContent='ID: '+id;
   renderStepper(record);
-  ['acceptance','test','tz'].forEach(k=>renderPanel(k,record,true));
+  ['specs','acceptance','test'].forEach(k=>renderPanel(k,record,true));
+  renderTz(record,true);
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',i===0));
   document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===0));
   const u=new URL(location.href);u.searchParams.set('id',id);history.replaceState({},'',u);
@@ -264,11 +334,39 @@ $('#tabs').addEventListener('click',e=>{
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab));
 });
 $('#tabpanels').addEventListener('click',e=>{
-  const btn=e.target.closest('button[data-act]');if(!btn) return;
-  const docKey=btn.dataset.doc;
-  if(btn.dataset.act==='edit') renderPanel(docKey,current.record,false);
-  if(btn.dataset.act==='save') saveEdit(docKey);
-  if(btn.dataset.act==='cancel') renderPanel(docKey,current.record,true);
+  const btn=e.target.closest('button[data-act]');
+  if(btn){
+    const docKey=btn.dataset.doc;
+    if(docKey==='tz'){
+      if(btn.dataset.act==='edit') renderTz(current.record,false);
+      if(btn.dataset.act==='save') saveTz();
+      if(btn.dataset.act==='cancel') renderTz(current.record,true);
+    }else{
+      if(btn.dataset.act==='edit') renderPanel(docKey,current.record,false);
+      if(btn.dataset.act==='save') saveEdit(docKey);
+      if(btn.dataset.act==='cancel') renderPanel(docKey,current.record,true);
+    }
+    return;
+  }
+  const addBtn=e.target.closest('#addWorkItemBtn');
+  if(addBtn){
+    current.record.tz.workItems.push({text:'',done:false});
+    renderTz(current.record,false);
+    return;
+  }
+  const remBtn=e.target.closest('button[data-remove]');
+  if(remBtn){
+    current.record.tz.workItems.splice(Number(remBtn.dataset.remove),1);
+    renderTz(current.record,false);
+  }
+});
+$('#checklist-tz').addEventListener('change',e=>{
+  const cb=e.target.closest('input[type="checkbox"]');if(!cb) return;
+  const idx=Number(cb.dataset.idx);
+  current.record.tz.workItems[idx].done=cb.checked;
+  saveMotor(current.id,current.record);
+  const span=cb.parentElement.querySelector('.txt');
+  if(span) span.classList.toggle('done',cb.checked);
 });
 $('#stepper').addEventListener('click',e=>{
   const btn=e.target.closest('.step');if(!btn) return;
@@ -277,7 +375,8 @@ $('#stepper').addEventListener('click',e=>{
 $('#advanceBtn').addEventListener('click',advanceStage);
 window.addEventListener('beforeprint',()=>{
   if(!current) return;
-  ['acceptance','test','tz'].forEach(k=>renderPanel(k,current.record,true));
+  ['specs','acceptance','test'].forEach(k=>renderPanel(k,current.record,true));
+  renderTz(current.record,true);
 });
 
 const initial=new URLSearchParams(location.search).get('id');
