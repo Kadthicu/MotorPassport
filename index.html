@@ -74,13 +74,19 @@
     .defect-table th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
     .defect-table td{padding:9px 10px;border-bottom:1px solid var(--line)}
     .defect-table tbody tr:last-child td{border-bottom:0}
-    .defect-table input[type=text]{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--ink)}
-    .defect-table input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
     .defect-badge{padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap;display:inline-block}
     .defect-badge.bad{background:#fee2e2;color:#b91c1c}
     .defect-badge.ok{background:#dcfce7;color:#166534}
+    .defect-cards{display:grid;gap:12px;margin-bottom:12px}
+    .defect-card{border:1px solid var(--line);border-radius:14px;padding:14px}
+    .defect-card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .defect-card-grid label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:700}
+    .defect-card-grid input[type=text]{border:1px solid var(--line);border-radius:8px;padding:9px 10px;color:var(--ink);font-weight:400;font-size:14px}
+    .defect-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+    .defect-card-broken{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);font-size:13px}
+    .defect-card-broken input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
-    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}}
+    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}.defect-card-grid{grid-template-columns:1fr}.defect-card-foot{flex-direction:column;align-items:stretch}}
     @media print{body{background:white}.hero,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
   </style>
 </head>
@@ -416,15 +422,25 @@ function refreshPartsDatalists(){
 
 function renderDefect(record,readOnly){
   const items=record.defect.items;
-  const table=(rowsHtml)=>`<div class="defect-table-wrap"><table class="defect-table"><thead><tr><th>Деталь</th><th>${readOnly?'Состояние':'Сломана?'}</th><th>Марка</th><th>Размер</th>${readOnly?'':'<th></th>'}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
   if(!items.length&&readOnly){
     $('#parts-defect').innerHTML='<p class="hint" style="margin:0;color:var(--muted);font-size:13px">Детали не добавлены.</p>';
   }else if(readOnly){
-    $('#parts-defect').innerHTML=table(items.map(it=>`<tr><td>${escapeHtml(it.name)}</td><td><span class="defect-badge ${it.broken?'bad':'ok'}">${it.broken?'Сломана':'Исправна'}</span></td><td>${escapeHtml(it.brand||'—')}</td><td>${escapeHtml(it.size||'—')}</td></tr>`).join(''));
+    const rows=items.map(it=>`<tr><td>${escapeHtml(it.name)}</td><td><span class="defect-badge ${it.broken?'bad':'ok'}">${it.broken?'Сломана':'Исправна'}</span></td><td>${escapeHtml(it.brand||'—')}</td><td>${escapeHtml(it.size||'—')}</td></tr>`).join('');
+    $('#parts-defect').innerHTML=`<div class="defect-table-wrap"><table class="defect-table"><thead><tr><th>Деталь</th><th>Состояние</th><th>Марка</th><th>Размер</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }else{
     refreshPartsDatalists();
-    const rows=items.map((it,i)=>`<tr><td><input type="text" list="partNamesList" data-idx="${i}" data-field="name" value="${escapeHtml(it.name)}"></td><td><input type="checkbox" data-idx="${i}" data-field="broken" ${it.broken?'checked':''}></td><td><input type="text" list="bearingBrandsList" data-idx="${i}" data-field="brand" value="${escapeHtml(it.brand||'')}"></td><td><input type="text" list="bearingSizesList" data-idx="${i}" data-field="size" value="${escapeHtml(it.size||'')}"></td><td><button type="button" class="icon-btn" data-remove-defect="${i}" title="Удалить">✕</button></td></tr>`).join('');
-    $('#parts-defect').innerHTML=(items.length?table(rows):'')+'<button type="button" class="btn secondary add-item" id="addDefectItemBtn">+ Добавить деталь</button>';
+    const cards=items.map((it,i)=>`<div class="defect-card">
+      <div class="defect-card-grid">
+        <label>Деталь<input type="text" list="partNamesList" data-idx="${i}" data-field="name" value="${escapeHtml(it.name)}"></label>
+        <label>Марка подшипника<input type="text" list="bearingBrandsList" data-idx="${i}" data-field="brand" value="${escapeHtml(it.brand||'')}"></label>
+        <label>Размер подшипника<input type="text" list="bearingSizesList" data-idx="${i}" data-field="size" value="${escapeHtml(it.size||'')}"></label>
+      </div>
+      <div class="defect-card-foot">
+        <label class="defect-card-broken"><input type="checkbox" data-idx="${i}" data-field="broken" ${it.broken?'checked':''}> Сломана</label>
+        <button type="button" class="btn secondary" data-remove-defect="${i}">Удалить деталь</button>
+      </div>
+    </div>`).join('');
+    $('#parts-defect').innerHTML=`<div class="defect-cards">${cards}</div><button type="button" class="btn secondary add-item" id="addDefectItemBtn">+ Добавить деталь</button>`;
   }
   $('#actions-defect').innerHTML=readOnly
     ?`<button class="btn secondary" data-act="edit" data-doc="defect" type="button">Редактировать</button>`
