@@ -23,13 +23,9 @@
 
 ## Публикация на GitHub Pages
 
-Откройте `Settings` → `Pages`. В разделе `Build and deployment` выберите:
+Сайт публикуется автоматически через GitHub Actions (`.github/workflows/pages.yml`) при каждом пуше в `main`. В `Settings` → `Pages` источник (`Source`) должен быть выставлен на `GitHub Actions` — это нужно сделать один раз вручную, дальше публикация идёт сама.
 
-- Source: `Deploy from a branch`
-- Branch: `main`
-- Folder: `/ (root)`
-
-После сохранения сайт будет доступен по адресу:
+Сайт доступен по адресу:
 
 `https://kadthicu.github.io/MotorPassport/`
 
