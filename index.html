@@ -8,7 +8,7 @@
   <style>
     :root{--bg:#eef2f7;--card:#fff;--ink:#142033;--muted:#667085;--accent:#2563eb;--accent2:#0f172a;--ok:#15803d;--warn:#b45309;--line:#d9e0ea;--soft:#f8fafc}
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#e9eef6 0,#f8fafc 45%,#edf2f7 100%);color:var(--ink);min-height:100vh}
-    button,input,textarea,select{font:inherit} .shell{max-width:980px;margin:auto;padding:18px 14px 48px}.top{display:flex;align-items:center;gap:16px;margin-bottom:18px}.top .company-logo{height:40px;width:auto;filter:drop-shadow(0 3px 6px #0f172a2e)}.brand{border-left:1px solid var(--line);padding-left:16px}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;border-radius:24px;padding:24px;box-shadow:0 20px 50px #0f172a2e}.hero h2{margin:0 0 16px;font-size:clamp(22px,4.5vw,32px);line-height:1.1}.search{display:flex;gap:10px;background:#fff;padding:7px;border-radius:16px}.search input{flex:1;min-width:0;border:0;outline:0;padding:12px 14px;color:#111827}.search button{border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;padding:12px 20px;cursor:pointer}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chip{border:1px solid #ffffff38;background:#ffffff12;color:white;border-radius:999px;padding:7px 10px;font-size:12px;cursor:pointer}.notice{display:none;margin-top:16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:13px 15px}.passport{display:none;margin-top:18px}.summary{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 12px 36px #0f172a15}.summary-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;color:var(--muted)}.summary h3{font-size:28px;margin:6px 0}.status{white-space:nowrap;padding:8px 12px;border-radius:999px;font-weight:800;font-size:13px}.status.s0{background:#fee2e2;color:#b91c1c}.status.s1{background:#fef3c7;color:#92400e}.status.s2{background:#dbeafe;color:#1e40af}.status.s3{background:#ede9fe;color:#5b21b6}.status.s4{background:#dcfce7;color:#166534}.serial{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-weight:800}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:var(--accent2);color:#fff}.secondary{background:#e2e8f0;color:#1e293b}
+    button,input,textarea,select{font:inherit} .shell{max-width:980px;margin:auto;padding:18px 14px 48px}.top{display:flex;align-items:center;gap:16px;margin-bottom:18px}.top .company-logo{height:40px;width:auto;filter:drop-shadow(0 3px 6px #0f172a2e)}.brand{border-left:1px solid var(--line);padding-left:16px}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;border-radius:24px;padding:24px;box-shadow:0 20px 50px #0f172a2e}.hero h2{margin:0 0 16px;font-size:clamp(22px,4.5vw,32px);line-height:1.1}.search{display:flex;gap:10px;background:#fff;padding:7px;border-radius:16px}.search input{flex:1;min-width:0;border:0;outline:0;padding:12px 14px;color:#111827}.search button{border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;padding:12px 20px;cursor:pointer}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chip{border:1px solid #ffffff38;background:#ffffff12;color:white;border-radius:999px;padding:7px 10px;font-size:12px;cursor:pointer}.notice{display:none;margin-top:16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:13px 15px}.passport{display:none;margin-top:18px}.summary{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 12px 36px #0f172a15}.summary-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;color:var(--muted)}.summary h3{font-size:28px;margin:6px 0}.status{white-space:nowrap;padding:8px 12px;border-radius:999px;font-weight:800;font-size:13px}.status.s0{background:#fee2e2;color:#b91c1c}.status.s1{background:#fef3c7;color:#92400e}.status.s2{background:#dbeafe;color:#1e40af}.status.s3{background:#ede9fe;color:#5b21b6}.status.s4{background:#dcfce7;color:#166534}.serial{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-weight:800}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:var(--accent2);color:#fff}.secondary{background:#e2e8f0;color:#1e293b}
     .stepper-wrap{background:var(--card);border-radius:22px;padding:18px 20px;box-shadow:0 12px 36px #0f172a15;margin-top:14px}
     .stepper{display:flex;gap:6px}
     .step{flex:1;border:0;background:none;padding:10px 6px;border-radius:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
@@ -29,6 +29,7 @@
     .panel.active{display:block}
     .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
     .panel-head h4{margin:0;font-size:16px}
+    .panel-head-actions{display:flex;align-items:center;gap:8px}
     .rows{display:grid;gap:0}.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row span:first-child{color:var(--muted)}.row strong{text-align:right}
     .row.edit{align-items:flex-start}.row.edit span{padding-top:8px;flex:0 0 42%}
     .row.edit input,.row.edit textarea,.row.edit select{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);min-width:0}
@@ -70,7 +71,7 @@
     .dash-badge.s4{background:#dcfce7;color:#166534}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
     @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}}
-    @media print{body{background:white}.hero,.actions,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
+    @media print{body{background:white}.hero,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
   </style>
 </head>
 <body>
@@ -122,10 +123,6 @@
     <section class="passport" id="passport">
       <article class="summary">
         <div class="summary-head"><div><div class="eyebrow">Цифровой паспорт ремонта</div><h3 id="model"></h3><div class="serial" id="idLabel"></div></div><div class="status" id="status"></div></div>
-        <div class="actions">
-          <button class="btn primary" onclick="window.print()" type="button">Печать открытого документа</button>
-          <button class="btn secondary" id="copyBtn" type="button">Скопировать ссылку</button>
-        </div>
       </article>
 
       <div class="stepper-wrap">
@@ -141,19 +138,19 @@
       </div>
       <div class="tabpanels" id="tabpanels">
         <article class="panel active" data-panel="specs">
-          <div class="panel-head"><h4>Технические характеристики</h4><div id="actions-specs"></div></div>
+          <div class="panel-head"><h4>Технические характеристики</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-specs"></div></div></div>
           <div class="rows" id="rows-specs"></div>
         </article>
         <article class="panel" data-panel="acceptance">
-          <div class="panel-head"><h4>Акт приёмки</h4><div id="actions-acceptance"></div></div>
+          <div class="panel-head"><h4>Акт приёмки</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-acceptance"></div></div></div>
           <div class="rows" id="rows-acceptance"></div>
         </article>
         <article class="panel" data-panel="test">
-          <div class="panel-head"><h4>Акт испытаний</h4><div id="actions-test"></div></div>
+          <div class="panel-head"><h4>Акт испытаний</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-test"></div></div></div>
           <div class="rows" id="rows-test"></div>
         </article>
         <article class="panel" data-panel="tz">
-          <div class="panel-head"><h4>Техническое задание</h4><div id="actions-tz"></div></div>
+          <div class="panel-head"><h4>Техническое задание</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-tz"></div></div></div>
           <div class="checklist" id="checklist-tz"></div>
           <div class="rows" id="rows-tz"></div>
         </article>
@@ -392,7 +389,6 @@ function showMotor(raw){
 }
 
 $('#searchForm').addEventListener('submit',e=>{e.preventDefault();showMotor($('#motorId').value)});
-$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);$('#copyBtn').textContent='Ссылка скопирована';setTimeout(()=>$('#copyBtn').textContent='Скопировать ссылку',1500)}catch{prompt('Скопируйте ссылку:',location.href)}};
 
 function showAddError(msg){const el=$('#addError');el.textContent=msg;el.style.display='block'}
 function openAddPanel(){
