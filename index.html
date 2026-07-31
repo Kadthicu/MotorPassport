@@ -99,8 +99,6 @@
           <label>Дата приёмки<input id="newDate" type="text" placeholder="31.07.2026"></label>
           <label>Кем принят<input id="newAcceptedBy" type="text"></label>
           <label>Участок<input id="newDepartment" type="text"></label>
-          <label>Заказ-наряд<input id="newWorkOrder" type="text"></label>
-          <label class="full">Состояние при приёме<textarea id="newCondition"></textarea></label>
           <label class="full">Заявленная неисправность<textarea id="newFault"></textarea></label>
         </div>
         <div class="add-error" id="addError"></div>
@@ -182,10 +180,8 @@ const SCHEMAS={
     {key:'date',label:'Дата приёмки'},
     {key:'acceptedBy',label:'Кем принят'},
     {key:'department',label:'Участок'},
-    {key:'conditionOnReceipt',label:'Состояние при приёме',type:'textarea'},
     {key:'declaredFault',label:'Заявленная неисправность',type:'textarea'},
     {key:'completeness',label:'Комплектность / заменённые узлы',type:'textarea'},
-    {key:'workOrder',label:'Заказ-наряд'},
     {key:'notes',label:'Примечания',type:'textarea'}
   ],
   test:[
@@ -211,7 +207,7 @@ const motors={
       {date:'20.07.2026',actor:'Сидорова Е. В.'}
     ]},
     specs:{power:'45 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'286 кг',brake:'Электромагнитный тормоз ТЭП-45'},
-    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',conditionOnReceipt:'Не запускается, посторонний шум подшипника',declaredFault:'Заклинивание подшипника, перегрев обмотки',completeness:'Полный комплект. Заменены: подшипники SKF 6312/6310, уплотнения, муфта МУВП-400',workOrder:'ЗН-260718-14',notes:''},
+    acceptanceAct:{date:'18.07.2026',acceptedBy:'Иванов И. И.',department:'Цех № 2',declaredFault:'Заклинивание подшипника, перегрев обмотки',completeness:'Полный комплект. Заменены: подшипники SKF 6312/6310, уплотнения, муфта МУВП-400',notes:''},
     testAct:{date:'20.07.2026',tester:'Петров А. С.',insulationResistance:'150 МОм',testPressure:'4 бар',vibration:'1,6 мм/с',conclusion:'Годен',notes:'Утечек нет, вибрация в пределах нормы'},
     tz:{
       workItems:[
@@ -234,7 +230,7 @@ const motors={
       null
     ]},
     specs:{power:'75 кВт',voltage:'660 В',rpm:'1 000 об/мин',ip:'IP54',mass:'412 кг',brake:'Электромагнитный тормоз ТЭП-75'},
-    acceptanceAct:{date:'19.07.2026',acceptedBy:'Смирнов Д. В.',department:'Цех № 2',conditionOnReceipt:'Гудит при пуске, повышенная вибрация',declaredFault:'Износ подшипников, повреждена обмотка статора',completeness:'Полный комплект, требуется восстановление обмотки',workOrder:'ЗН-260719-03',notes:''},
+    acceptanceAct:{date:'19.07.2026',acceptedBy:'Смирнов Д. В.',department:'Цех № 2',declaredFault:'Износ подшипников, повреждена обмотка статора',completeness:'Полный комплект, требуется восстановление обмотки',notes:''},
     testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Требует доработки',notes:'Испытания не проводились — двигатель в ремонте'},
     tz:{
       workItems:[
@@ -258,7 +254,7 @@ const motors={
       null
     ]},
     specs:{power:'30 кВт',voltage:'380 В',rpm:'1 500 об/мин',ip:'IP55',mass:'218 кг',brake:'Электромагнитный тормоз ТЭП-30'},
-    acceptanceAct:{date:'21.07.2026',acceptedBy:'Кузнецов М. Н.',department:'Цех № 1',conditionOnReceipt:'Повреждена клеммная коробка',declaredFault:'Повреждение клеммной коробки, требуется дефектация обмотки',completeness:'Полный комплект',workOrder:'ЗН-260721-08',notes:''},
+    acceptanceAct:{date:'21.07.2026',acceptedBy:'Кузнецов М. Н.',department:'Цех № 1',declaredFault:'Повреждение клеммной коробки, требуется дефектация обмотки',completeness:'Полный комплект',notes:''},
     testAct:{date:'22.07.2026',tester:'Лаборатория № 1',insulationResistance:'132 МОм',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:'Ожидаются испытания давлением и на вибрацию'},
     tz:{
       workItems:[
@@ -445,7 +441,7 @@ $('#addForm').addEventListener('submit',e=>{
     model:$('#newModel').value.trim()||'Электродвигатель',
     stage:{current:0,log:[{date:$('#newDate').value.trim()||todayStr(),actor:acceptedBy},null,null,null,null]},
     specs:{power:$('#newPower').value.trim(),voltage:$('#newVoltage').value.trim(),rpm:$('#newRpm').value.trim(),ip:$('#newIp').value.trim(),mass:$('#newMass').value.trim(),brake:$('#newBrake').value.trim()},
-    acceptanceAct:{date:$('#newDate').value.trim()||todayStr(),acceptedBy,department:$('#newDepartment').value.trim(),conditionOnReceipt:$('#newCondition').value.trim(),declaredFault:$('#newFault').value.trim(),completeness:'',workOrder:$('#newWorkOrder').value.trim(),notes:''},
+    acceptanceAct:{date:$('#newDate').value.trim()||todayStr(),acceptedBy,department:$('#newDepartment').value.trim(),declaredFault:$('#newFault').value.trim(),completeness:'',notes:''},
     testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:''},
     tz:{workItems:[],customerRequirements:''}
   };
