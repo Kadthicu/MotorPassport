@@ -41,9 +41,20 @@
     .check-row.edit input[type=text]{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 9px}
     .icon-btn{border:0;background:#fee2e2;color:#b91c1c;border-radius:8px;width:30px;height:30px;flex:0 0 auto;cursor:pointer;font-weight:800}
     .add-item{margin-top:10px}
+    .add-toggle{border:1px dashed #ffffff5c;background:transparent;color:#dbeafe;border-radius:999px;padding:7px 12px;font-size:12px;cursor:pointer;margin-top:14px}
+    .add-panel{display:none;background:var(--card);border-radius:22px;padding:20px;box-shadow:0 12px 36px #0f172a15;margin-top:16px}
+    .add-panel h3{margin:0 0 4px;font-size:18px}
+    .add-panel .hint{color:var(--muted);font-size:12px;margin:0 0 14px}
+    .add-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .add-grid label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:700}
+    .add-grid input,.add-grid textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font-size:14px;font-weight:400}
+    .add-grid textarea{min-height:56px;resize:vertical}
+    .add-grid .full{grid-column:1/-1}
+    .add-error{display:none;margin-top:12px;color:#b91c1c;font-size:13px;font-weight:700}
+    .add-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
-    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}}
-    @media print{body{background:white}.hero,.top,.actions,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.panel{display:block!important;border-bottom:1px solid #ddd;page-break-inside:avoid}.step{cursor:default}}
+    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}}
+    @media print{body{background:white}.hero,.top,.actions,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.panel{display:block!important;border-bottom:1px solid #ddd;page-break-inside:avoid}.step{cursor:default}}
   </style>
 </head>
 <body>
@@ -52,7 +63,35 @@
     <section class="hero">
       <h2>Найдите двигатель по его ID</h2>
       <form class="search" id="searchForm"><input id="motorId" type="number" inputmode="numeric" min="1" autocomplete="off" placeholder="Например: 1542" aria-label="ID двигателя"><button>Найти двигатель</button></form>
-      <div class="examples"><button class="chip" data-id="1542" type="button">1542</button><button class="chip" data-id="1543" type="button">1543</button><button class="chip" data-id="1544" type="button">1544</button></div>
+      <div class="examples" id="examples"></div>
+      <button class="add-toggle" id="addMotorToggle" type="button">+ Добавить новый двигатель</button>
+    </section>
+    <section class="add-panel" id="addPanel">
+      <h3>Новый двигатель</h3>
+      <p class="hint">Заполните карточку приёмки — двигатель будет создан на этапе «Приёмка» и сохранён в этом браузере.</p>
+      <form id="addForm">
+        <div class="add-grid">
+          <label>ID двигателя*<input id="newId" type="number" inputmode="numeric" min="1" required></label>
+          <label>Модель<input id="newModel" type="text" placeholder="Электродвигатель АИР132M4"></label>
+          <label>Мощность<input id="newPower" type="text" placeholder="15 кВт"></label>
+          <label>Напряжение<input id="newVoltage" type="text" placeholder="380 В"></label>
+          <label>Частота вращения<input id="newRpm" type="text" placeholder="1 500 об/мин"></label>
+          <label>Степень защиты<input id="newIp" type="text" placeholder="IP55"></label>
+          <label>Масса<input id="newMass" type="text" placeholder="120 кг"></label>
+          <label>Тормоз<input id="newBrake" type="text" placeholder="Электромагнитный тормоз ТЭП-15"></label>
+          <label>Дата приёмки<input id="newDate" type="text" placeholder="31.07.2026"></label>
+          <label>Кем принят<input id="newAcceptedBy" type="text"></label>
+          <label>Участок<input id="newDepartment" type="text"></label>
+          <label>Заказ-наряд<input id="newWorkOrder" type="text"></label>
+          <label class="full">Состояние при приёме<textarea id="newCondition"></textarea></label>
+          <label class="full">Заявленная неисправность<textarea id="newFault"></textarea></label>
+        </div>
+        <div class="add-error" id="addError"></div>
+        <div class="add-actions">
+          <button class="btn primary" type="submit">Создать двигатель</button>
+          <button class="btn secondary" id="addCancelBtn" type="button">Отмена</button>
+        </div>
+      </form>
     </section>
     <div class="notice" id="notice">Двигатель с таким ID не найден. Проверьте номер и попробуйте снова.</div>
     <section class="passport" id="passport">
@@ -216,6 +255,18 @@ function loadMotor(id){
 }
 function saveMotor(id,record){localStorage.setItem(LS_PREFIX+id,JSON.stringify(record))}
 function resetMotor(id){localStorage.removeItem(LS_PREFIX+id)}
+function getKnownIds(){
+  const ids=new Set(Object.keys(motors));
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith(LS_PREFIX)) ids.add(k.slice(LS_PREFIX.length));
+  }
+  return Array.from(ids).sort((a,b)=>Number(a)-Number(b));
+}
+function refreshChips(){
+  $('#examples').innerHTML=getKnownIds().map(id=>`<button class="chip" data-id="${id}" type="button">${escapeHtml(id)}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>showMotor(b.dataset.id));
+}
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -319,8 +370,41 @@ function showMotor(raw){
 }
 
 $('#searchForm').addEventListener('submit',e=>{e.preventDefault();showMotor($('#motorId').value)});
-document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>showMotor(b.dataset.id));
 $('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);$('#copyBtn').textContent='Ссылка скопирована';setTimeout(()=>$('#copyBtn').textContent='Скопировать ссылку',1500)}catch{prompt('Скопируйте ссылку:',location.href)}};
+
+function showAddError(msg){const el=$('#addError');el.textContent=msg;el.style.display='block'}
+function openAddPanel(){
+  $('#addForm').reset();
+  $('#addError').style.display='none';
+  $('#addPanel').style.display='block';
+  $('#newDate').value=todayStr();
+  $('#newId').focus();
+}
+function closeAddPanel(){$('#addPanel').style.display='none'}
+$('#addMotorToggle').addEventListener('click',()=>{
+  $('#addPanel').style.display==='block'?closeAddPanel():openAddPanel();
+});
+$('#addCancelBtn').addEventListener('click',closeAddPanel);
+$('#addForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const id=$('#newId').value.trim();
+  $('#addError').style.display='none';
+  if(!/^[0-9]+$/.test(id)){showAddError('Введите числовой ID двигателя.');return}
+  if(loadMotor(id)){showAddError('Двигатель с таким ID уже существует.');return}
+  const acceptedBy=$('#newAcceptedBy').value.trim();
+  const record={
+    model:$('#newModel').value.trim()||'Электродвигатель',
+    stage:{current:0,log:[{date:$('#newDate').value.trim()||todayStr(),actor:acceptedBy},null,null,null,null]},
+    specs:{power:$('#newPower').value.trim(),voltage:$('#newVoltage').value.trim(),rpm:$('#newRpm').value.trim(),ip:$('#newIp').value.trim(),mass:$('#newMass').value.trim(),brake:$('#newBrake').value.trim()},
+    acceptanceAct:{date:$('#newDate').value.trim()||todayStr(),acceptedBy,department:$('#newDepartment').value.trim(),conditionOnReceipt:$('#newCondition').value.trim(),declaredFault:$('#newFault').value.trim(),completeness:'',workOrder:$('#newWorkOrder').value.trim(),notes:''},
+    testAct:{date:'',tester:'',insulationResistance:'—',testPressure:'—',vibration:'—',conclusion:'Испытания продолжаются',notes:''},
+    tz:{workItems:[],customerRequirements:''}
+  };
+  saveMotor(id,record);
+  closeAddPanel();
+  refreshChips();
+  showMotor(id);
+});
 $('#resetBtn').onclick=()=>{
   if(!current) return;
   if(confirm('Сбросить данные двигателя к демонстрационным значениям? Все внесённые правки будут потеряны.')){
@@ -379,6 +463,7 @@ window.addEventListener('beforeprint',()=>{
   renderTz(current.record,true);
 });
 
+refreshChips();
 const initial=new URLSearchParams(location.search).get('id');
 if(initial) showMotor(initial);
 </script>
