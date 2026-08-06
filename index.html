@@ -85,7 +85,10 @@
     .defect-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
     .defect-card-broken{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);font-size:13px}
     .defect-card-broken input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+    .cloud-auth{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:10px 12px;border:1px solid #ffffff38;border-radius:14px;background:#ffffff12}
+    .cloud-auth span{font-size:12px;color:#dbeafe}.cloud-auth button{white-space:nowrap}
     .photo-upload{border:2px dashed var(--line);border-radius:16px;padding:18px;text-align:center;background:var(--soft)}
+    .photo-status{color:var(--muted);font-size:12px;margin-top:10px}
     .photo-upload input{display:none}.photo-upload .hint{display:block;color:var(--muted);font-size:12px;margin-top:8px}
     .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
     .photo-card{position:relative;border-radius:14px;overflow:hidden;background:#e2e8f0;aspect-ratio:4/3}
@@ -106,6 +109,7 @@
       <div class="examples" id="examples"></div>
       <button class="add-toggle" id="addMotorToggle" type="button">+ Добавить новый двигатель</button>
       <button class="dash-toggle" id="dashboardToggle" type="button">Все двигатели</button>
+      <div class="cloud-auth"><span id="authStatus">Облачное хранилище: вход не выполнен</span><button class="btn secondary" id="authBtn" type="button">Войти</button></div>
     </section>
     <section class="add-panel" id="addPanel">
       <h3>Новый двигатель</h3>
@@ -191,7 +195,8 @@
           <div class="photo-upload">
             <input id="photoInput" type="file" accept="image/*" multiple>
             <button class="btn primary" id="photoSelectBtn" type="button">+ Добавить фото</button>
-            <span class="hint">До 6 фотографий. Снимки уменьшаются перед сохранением в браузере.</span>
+            <span class="hint">Фотографии сохраняются в защищённом облачном хранилище. Перед загрузкой снимки автоматически уменьшаются.</span>
+            <div class="photo-status" id="photoStatus"></div>
           </div>
           <div class="photo-grid" id="photoGrid"></div>
         </article>
@@ -200,7 +205,46 @@
     </section>
     <footer class="foot">MotorPassport · прототип цифрового учёта ремонта электродвигателей</footer>
   </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL='https://vkiujeeozsqnmbhuuqhb.supabase.co';
+const SUPABASE_KEY='sb_publishable_egGlqOCKueYjx9HgqyihaQ_joP_AG8E';
+const PHOTO_BUCKET='engine-photos';
+const cloud=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let cloudSession=null;
+let cloudPhotos=[];
+
+async function refreshAuth(){
+  const {data}=await cloud.auth.getSession();
+  cloudSession=data.session;
+  const status=document.querySelector('#authStatus');
+  const btn=document.querySelector('#authBtn');
+  if(cloudSession){
+    status.textContent='Облачное хранилище: '+cloudSession.user.email;
+    btn.textContent='Выйти';
+  }else{
+    status.textContent='Облачное хранилище: вход не выполнен';
+    btn.textContent='Войти';
+  }
+  if(current) renderPhotos(current.record);
+}
+async function toggleAuth(){
+  if(cloudSession){
+    await cloud.auth.signOut();
+    await refreshAuth();
+    return;
+  }
+  const email=prompt('Email для входа в MotorPassport:','');
+  if(!email) return;
+  const password=prompt('Пароль:','');
+  if(!password) return;
+  const btn=document.querySelector('#authBtn');
+  btn.disabled=true;
+  const {error}=await cloud.auth.signInWithPassword({email:email.trim(),password});
+  btn.disabled=false;
+  if(error){alert('Не удалось войти: '+error.message);return}
+  await refreshAuth();
+}
 const STAGES=['Приёмка','Дефектация','Ремонт','Испытания','Выдача'];
 const STATUS_BY_STAGE=['Принят в ремонт','На дефектации','В ремонте','На испытаниях','Выдан заказчику'];
 
@@ -474,12 +518,37 @@ function saveDefect(){
   renderDefect(current.record,true);
 }
 
-const MAX_PHOTOS=6;
-function renderPhotos(record){
+async function renderPhotos(record){
   if(!Array.isArray(record.photos)) record.photos=[];
-  $('#photoCount').textContent=record.photos.length+' / '+MAX_PHOTOS;
-  $('#photoGrid').innerHTML=record.photos.length
-    ?record.photos.map((src,i)=>`<div class="photo-card"><img src="${src}" alt="Фото двигателя ${i+1}" data-photo="${i}"><button class="photo-remove" type="button" data-remove-photo="${i}" aria-label="Удалить фото">✕</button></div>`).join('')
+  const legacy=record.photos.map((src,i)=>({src,legacyIndex:i}));
+  cloudPhotos=[];
+  const status=$('#photoStatus');
+  if(cloudSession&&current){
+    status.textContent='Загружаем фотографии…';
+    const {data,error}=await cloud.storage.from(PHOTO_BUCKET).list(current.id,{limit:1000,sortBy:{column:'created_at',order:'desc'}});
+    if(error){
+      status.textContent='Не удалось получить фотографии: '+error.message;
+    }else{
+      const files=(data||[]).filter(file=>file.name&&!file.name.endsWith('/'));
+      const signed=await Promise.all(files.map(async file=>{
+        const path=current.id+'/'+file.name;
+        const {data:link}=await cloud.storage.from(PHOTO_BUCKET).createSignedUrl(path,3600);
+        return {path,src:link&&link.signedUrl};
+      }));
+      cloudPhotos=signed.filter(photo=>photo.src);
+      status.textContent=cloudPhotos.length?'Фото загружены из облака.':'В облаке пока нет фотографий.';
+    }
+  }else{
+    status.textContent='Войдите, чтобы просматривать и добавлять облачные фотографии.';
+  }
+  const all=legacy.concat(cloudPhotos);
+  $('#photoCount').textContent=all.length+' фото';
+  $('#photoGrid').innerHTML=all.length
+    ?all.map((photo,i)=>{
+      const cloudPath=photo.path?` data-cloud-path="${escapeHtml(photo.path)}"`:'';
+      const legacyIndex=photo.legacyIndex!==undefined?` data-legacy-index="${photo.legacyIndex}"`:'';
+      return `<div class="photo-card"><img src="${photo.src}" alt="Фото двигателя ${i+1}" data-photo="${i}"><button class="photo-remove" type="button"${cloudPath}${legacyIndex} aria-label="Удалить фото">✕</button></div>`;
+    }).join('')
     :'<div class="photo-empty">Фотографии пока не добавлены.</div>';
 }
 function compressPhoto(file){
@@ -506,20 +575,27 @@ function compressPhoto(file){
 }
 async function addPhotos(files){
   if(!current) return;
-  if(!Array.isArray(current.record.photos)) current.record.photos=[];
-  const available=MAX_PHOTOS-current.record.photos.length;
-  if(available<=0){alert('Можно сохранить не больше '+MAX_PHOTOS+' фотографий.');return}
-  const selected=[...files].slice(0,available);
-  const before=current.record.photos.slice();
+  if(!cloudSession){alert('Сначала войдите в облачное хранилище.');return}
+  const selected=[...files];
+  if(!selected.length) return;
+  const button=$('#photoSelectBtn');
+  button.disabled=true;
+  $('#photoStatus').textContent='Загружаем '+selected.length+' фото…';
   try{
-    for(const file of selected) current.record.photos.push(await compressPhoto(file));
-    saveMotor(current.id,current.record);
-    renderPhotos(current.record);
-    if(files.length>available) alert('Сохранены первые '+available+' фото — достигнут лимит.');
+    for(const file of selected){
+      const dataUrl=await compressPhoto(file);
+      const blob=await (await fetch(dataUrl)).blob();
+      const safeName=(file.name||'photo.jpg').replace(/[^a-zA-Z0-9._-]/g,'_');
+      const path=current.id+'/'+Date.now()+'-'+crypto.randomUUID()+'-'+safeName.replace(/\.[^.]+$/,'.jpg');
+      const {error}=await cloud.storage.from(PHOTO_BUCKET).upload(path,blob,{contentType:'image/jpeg',upsert:false});
+      if(error) throw error;
+    }
+    await renderPhotos(current.record);
   }catch(err){
-    current.record.photos=before;
-    renderPhotos(current.record);
-    alert(err.name==='QuotaExceededError'?'Недостаточно памяти браузера. Удалите одно из фото или выберите снимок меньшего размера.':err.message);
+    alert('Не удалось загрузить фото: '+err.message);
+    await renderPhotos(current.record);
+  }finally{
+    button.disabled=false;
   }
 }
 function todayStr(){return new Date().toLocaleDateString('ru-RU')}
@@ -674,15 +750,23 @@ $('#stepper').addEventListener('click',e=>{
   setStage(Number(btn.dataset.stage));
 });
 $('#advanceBtn').addEventListener('click',advanceStage);
-$('#photoSelectBtn').addEventListener('click',()=>$('#photoInput').click());
+$('#authBtn').addEventListener('click',toggleAuth);
+$('#photoSelectBtn').addEventListener('click',()=>{if(!cloudSession){alert('Сначала войдите в облачное хранилище.');return}$('#photoInput').click()});
 $('#photoInput').addEventListener('change',e=>{addPhotos(e.target.files);e.target.value=''});
-$('#photoGrid').addEventListener('click',e=>{
+$('#photoGrid').addEventListener('click',async e=>{
   const remove=e.target.closest('[data-remove-photo]');
   if(remove){
     if(!confirm('Удалить эту фотографию?')) return;
-    current.record.photos.splice(Number(remove.dataset.removePhoto),1);
-    saveMotor(current.id,current.record);
-    renderPhotos(current.record);
+    const cloudPath=remove.dataset.cloudPath;
+    if(cloudPath){
+      if(!cloudSession){alert('Сначала войдите.');return}
+      const {error}=await cloud.storage.from(PHOTO_BUCKET).remove([cloudPath]);
+      if(error){alert('Не удалось удалить фото: '+error.message);return}
+    }else{
+      current.record.photos.splice(Number(remove.dataset.legacyIndex),1);
+      saveMotor(current.id,current.record);
+    }
+    await renderPhotos(current.record);
     return;
   }
   const img=e.target.closest('img[data-photo]');
@@ -699,6 +783,7 @@ refreshChips();
 refreshPartsDatalists();
 const initial=new URLSearchParams(location.search).get('id');
 if(initial) showMotor(initial);
+refreshAuth();
 </script>
 </body>
 </html>
