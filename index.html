@@ -21,7 +21,7 @@
     .step.upcoming{opacity:.55}
     .advance-row{display:flex;justify-content:flex-end;margin-top:10px}
     .advance-row .btn:disabled{opacity:.4;cursor:default}
-    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0 -1px}
+    .tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:16px 0 -1px}
     .tab{border:0;background:#e2e8f0;color:#334155;padding:11px 4px;border-radius:14px 14px 0 0;font-weight:700;cursor:pointer;font-size:11px}
     .tab.active{background:var(--card);color:var(--accent2)}
     .tabpanels{background:var(--card);border-radius:0 0 22px 22px;box-shadow:0 12px 36px #0f172a15;overflow:hidden}
@@ -85,8 +85,15 @@
     .defect-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
     .defect-card-broken{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);font-size:13px}
     .defect-card-broken input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+    .photo-upload{border:2px dashed var(--line);border-radius:16px;padding:18px;text-align:center;background:var(--soft)}
+    .photo-upload input{display:none}.photo-upload .hint{display:block;color:var(--muted);font-size:12px;margin-top:8px}
+    .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .photo-card{position:relative;border-radius:14px;overflow:hidden;background:#e2e8f0;aspect-ratio:4/3}
+    .photo-card img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+    .photo-remove{position:absolute;top:8px;right:8px;border:0;border-radius:999px;width:34px;height:34px;background:#0f172acc;color:white;font-weight:800;cursor:pointer}
+    .photo-empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 0 6px}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
-    @media(max-width:720px){.hero{padding:20px}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}.defect-card-grid{grid-template-columns:1fr}.defect-card-foot{flex-direction:column;align-items:stretch}}
+    @media(max-width:720px){.hero{padding:20px} .photo-grid{grid-template-columns:repeat(2,1fr)}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}.defect-card-grid{grid-template-columns:1fr}.defect-card-foot{flex-direction:column;align-items:stretch}}
     @media print{body{background:white}.hero,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
   </style>
 </head>
@@ -152,6 +159,7 @@
         <button class="tab" data-tab="defect" type="button">Дефектная ведомость</button>
         <button class="tab" data-tab="test" type="button">Акт испытаний</button>
         <button class="tab" data-tab="tz" type="button">Техническое задание</button>
+        <button class="tab" data-tab="photos" type="button">Фото</button>
       </div>
       <div class="tabpanels" id="tabpanels">
         <article class="panel active" data-panel="specs">
@@ -177,6 +185,15 @@
           <div class="panel-head"><h4>Техническое задание</h4><div class="panel-head-actions"><button class="btn secondary" onclick="window.print()" type="button">Печать / PDF</button><div id="actions-tz"></div></div></div>
           <div class="checklist" id="checklist-tz"></div>
           <div class="rows" id="rows-tz"></div>
+        </article>
+        <article class="panel" data-panel="photos">
+          <div class="panel-head"><h4>Фотографии двигателя</h4><span class="eyebrow" id="photoCount"></span></div>
+          <div class="photo-upload">
+            <input id="photoInput" type="file" accept="image/*" capture="environment" multiple>
+            <button class="btn primary" id="photoSelectBtn" type="button">+ Добавить фото</button>
+            <span class="hint">До 6 фотографий. Снимки уменьшаются перед сохранением в браузере.</span>
+          </div>
+          <div class="photo-grid" id="photoGrid"></div>
         </article>
       </div>
       <p class="demo">Демонстрационный прототип. Изменения сохраняются локально в этом браузере (localStorage).</p>
@@ -457,6 +474,54 @@ function saveDefect(){
   renderDefect(current.record,true);
 }
 
+const MAX_PHOTOS=6;
+function renderPhotos(record){
+  if(!Array.isArray(record.photos)) record.photos=[];
+  $('#photoCount').textContent=record.photos.length+' / '+MAX_PHOTOS;
+  $('#photoGrid').innerHTML=record.photos.length
+    ?record.photos.map((src,i)=>`<div class="photo-card"><img src="${src}" alt="Фото двигателя ${i+1}" data-photo="${i}"><button class="photo-remove" type="button" data-remove-photo="${i}" aria-label="Удалить фото">✕</button></div>`).join('')
+    :'<div class="photo-empty">Фотографии пока не добавлены.</div>';
+}
+function compressPhoto(file){
+  return new Promise((resolve,reject)=>{
+    if(!file.type.startsWith('image/')){reject(new Error('Можно добавлять только изображения.'));return}
+    if(file.size>12*1024*1024){reject(new Error('Файл слишком большой. Максимум 12 МБ.'));return}
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('Не удалось прочитать фотографию.'));
+    reader.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>reject(new Error('Не удалось обработать фотографию.'));
+      img.onload=()=>{
+        const maxSide=1400,scale=Math.min(1,maxSide/Math.max(img.width,img.height));
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.max(1,Math.round(img.width*scale));
+        canvas.height=Math.max(1,Math.round(img.height*scale));
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg',.78));
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+async function addPhotos(files){
+  if(!current) return;
+  if(!Array.isArray(current.record.photos)) current.record.photos=[];
+  const available=MAX_PHOTOS-current.record.photos.length;
+  if(available<=0){alert('Можно сохранить не больше '+MAX_PHOTOS+' фотографий.');return}
+  const selected=[...files].slice(0,available);
+  const before=current.record.photos.slice();
+  try{
+    for(const file of selected) current.record.photos.push(await compressPhoto(file));
+    saveMotor(current.id,current.record);
+    renderPhotos(current.record);
+    if(files.length>available) alert('Сохранены первые '+available+' фото — достигнут лимит.');
+  }catch(err){
+    current.record.photos=before;
+    renderPhotos(current.record);
+    alert(err.name==='QuotaExceededError'?'Недостаточно памяти браузера. Удалите одно из фото или выберите снимок меньшего размера.':err.message);
+  }
+}
 function todayStr(){return new Date().toLocaleDateString('ru-RU')}
 function setStage(i){
   const actor=prompt('Кто выполняет переход на этап «'+STAGES[i]+'»?','')||'';
@@ -483,6 +548,7 @@ function showMotor(raw){
   ['specs','acceptance','test'].forEach(k=>renderPanel(k,record,true));
   renderDefect(record,true);
   renderTz(record,true);
+  renderPhotos(record);
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',i===0));
   document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===0));
   const u=new URL(location.href);u.searchParams.set('id',id);history.replaceState({},'',u);
@@ -608,6 +674,20 @@ $('#stepper').addEventListener('click',e=>{
   setStage(Number(btn.dataset.stage));
 });
 $('#advanceBtn').addEventListener('click',advanceStage);
+$('#photoSelectBtn').addEventListener('click',()=>$('#photoInput').click());
+$('#photoInput').addEventListener('change',e=>{addPhotos(e.target.files);e.target.value=''});
+$('#photoGrid').addEventListener('click',e=>{
+  const remove=e.target.closest('[data-remove-photo]');
+  if(remove){
+    if(!confirm('Удалить эту фотографию?')) return;
+    current.record.photos.splice(Number(remove.dataset.removePhoto),1);
+    saveMotor(current.id,current.record);
+    renderPhotos(current.record);
+    return;
+  }
+  const img=e.target.closest('img[data-photo]');
+  if(img) window.open(img.src,'_blank','noopener');
+});
 window.addEventListener('beforeprint',()=>{
   if(!current) return;
   ['specs','acceptance','test'].forEach(k=>renderPanel(k,current.record,true));
