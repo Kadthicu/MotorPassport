@@ -87,6 +87,8 @@
     .defect-card-broken input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
     .cloud-auth{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:10px 12px;border:1px solid #ffffff38;border-radius:14px;background:#ffffff12}
     .cloud-auth span{font-size:12px;color:#dbeafe}.cloud-auth button{white-space:nowrap}
+    .auth-form{display:none;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:10px}
+    .auth-form.open{display:grid}.auth-form input{min-width:0;border:0;border-radius:10px;padding:10px 12px}
     .photo-upload{border:2px dashed var(--line);border-radius:16px;padding:18px;text-align:center;background:var(--soft)}
     .photo-status{color:var(--muted);font-size:12px;margin-top:10px}
     .photo-upload input{display:none}.photo-upload .hint{display:block;color:var(--muted);font-size:12px;margin-top:8px}
@@ -96,7 +98,7 @@
     .photo-remove{position:absolute;top:8px;right:8px;border:0;border-radius:999px;width:34px;height:34px;background:#0f172acc;color:white;font-weight:800;cursor:pointer}
     .photo-empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 0 6px}
     .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:26px}.demo{margin-top:12px;color:#475569;font-size:12px;text-align:center}
-    @media(max-width:720px){.hero{padding:20px} .photo-grid{grid-template-columns:repeat(2,1fr)}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}.defect-card-grid{grid-template-columns:1fr}.defect-card-foot{flex-direction:column;align-items:stretch}}
+    @media(max-width:720px){.hero{padding:20px}.auth-form{grid-template-columns:1fr}.photo-grid{grid-template-columns:repeat(2,1fr)}.search{flex-direction:column}.search button{width:100%}.summary-head{flex-direction:column}.summary h3{font-size:24px}.row{align-items:flex-start}.stepper{flex-direction:column}.step{flex-direction:row;justify-content:flex-start;text-align:left}.tabs{grid-template-columns:1fr 1fr}.row.edit span{flex:0 0 auto;width:100%}.row.edit{flex-direction:column}.add-grid{grid-template-columns:1fr}.dash-toggle{margin-left:0}.defect-card-grid{grid-template-columns:1fr}.defect-card-foot{flex-direction:column;align-items:stretch}}
     @media print{body{background:white}.hero,.foot,.notice,.demo,.tabs,.panel-head button,.advance-row,.icon-btn,.add-item,.add-panel,.add-toggle,.dashboard,.dash-toggle{display:none!important}.shell{max-width:none;padding:0}.passport{display:block!important}.stepper-wrap,.summary{box-shadow:none;border:1px solid #ddd}.tabpanels{box-shadow:none;border-radius:0}.step{cursor:default}.company-logo{filter:none}}
   </style>
 </head>
@@ -110,6 +112,7 @@
       <button class="add-toggle" id="addMotorToggle" type="button">+ Добавить новый двигатель</button>
       <button class="dash-toggle" id="dashboardToggle" type="button">Все двигатели</button>
       <div class="cloud-auth"><span id="authStatus">Облачное хранилище: вход не выполнен</span><button class="btn secondary" id="authBtn" type="button">Войти</button></div>
+      <form class="auth-form" id="authForm"><input id="authEmail" type="email" autocomplete="username" placeholder="Email" required><input id="authPassword" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="btn secondary" type="submit">Войти</button></form>
     </section>
     <section class="add-panel" id="addPanel">
       <h3>Новый двигатель</h3>
@@ -231,18 +234,24 @@ async function refreshAuth(){
 async function toggleAuth(){
   if(cloudSession){
     await cloud.auth.signOut();
+    $('#authForm').classList.remove('open');
     await refreshAuth();
     return;
   }
-  const email=prompt('Email для входа в MotorPassport:','');
-  if(!email) return;
-  const password=prompt('Пароль:','');
-  if(!password) return;
-  const btn=document.querySelector('#authBtn');
-  btn.disabled=true;
-  const {error}=await cloud.auth.signInWithPassword({email:email.trim(),password});
-  btn.disabled=false;
+  $('#authForm').classList.toggle('open');
+  if($('#authForm').classList.contains('open')) $('#authEmail').focus();
+}
+async function signIn(event){
+  event.preventDefault();
+  const email=$('#authEmail').value.trim();
+  const password=$('#authPassword').value;
+  const submit=$('#authForm button[type="submit"]');
+  submit.disabled=true;
+  const {error}=await cloud.auth.signInWithPassword({email,password});
+  submit.disabled=false;
   if(error){alert('Не удалось войти: '+error.message);return}
+  $('#authPassword').value='';
+  $('#authForm').classList.remove('open');
   await refreshAuth();
 }
 const STAGES=['Приёмка','Дефектация','Ремонт','Испытания','Выдача'];
@@ -751,6 +760,7 @@ $('#stepper').addEventListener('click',e=>{
 });
 $('#advanceBtn').addEventListener('click',advanceStage);
 $('#authBtn').addEventListener('click',toggleAuth);
+$('#authForm').addEventListener('submit',signIn);
 $('#photoSelectBtn').addEventListener('click',()=>{if(!cloudSession){alert('Сначала войдите в облачное хранилище.');return}$('#photoInput').click()});
 $('#photoInput').addEventListener('change',e=>{addPhotos(e.target.files);e.target.value=''});
 $('#photoGrid').addEventListener('click',async e=>{
