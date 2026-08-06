@@ -556,7 +556,7 @@ async function renderPhotos(record){
     ?all.map((photo,i)=>{
       const cloudPath=photo.path?` data-cloud-path="${escapeHtml(photo.path)}"`:'';
       const legacyIndex=photo.legacyIndex!==undefined?` data-legacy-index="${photo.legacyIndex}"`:'';
-      return `<div class="photo-card"><img src="${photo.src}" alt="Фото двигателя ${i+1}" data-photo="${i}"><button class="photo-remove" type="button"${cloudPath}${legacyIndex} aria-label="Удалить фото">✕</button></div>`;
+      return `<div class="photo-card"><img src="${photo.src}" alt="Фото двигателя ${i+1}" data-photo="${i}"><button class="photo-remove" type="button" data-remove-photo${cloudPath}${legacyIndex} aria-label="Удалить фото">✕</button></div>`;
     }).join('')
     :'<div class="photo-empty">Фотографии пока не добавлены.</div>';
 }
